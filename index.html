@@ -14,22 +14,18 @@
             --bg: #F8F9FA; --surface: #FFFFFF; --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg); color: #202124; }
 
         /* Login Screen */
         #login-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .login-btn { background: var(--primary); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-weight: bold; font-size: 16px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; }
+        .login-btn { background: var(--primary); color: white; border: none; padding: 15px 35px; border-radius: 50px; font-weight: bold; font-size: 16px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; }
 
         /* App Layout */
         #app-content { display: none; }
         .header { background: linear-gradient(135deg, #1A73E8, #0D47A1); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: var(--shadow); }
-        
-        /* Dashboard Container */
         .dashboard { position: fixed; top: 55px; width: 100%; padding: 20px 15px; background: var(--bg); z-index: 900; }
         .main-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
-        .main-card h1 { font-size: 32px; color: var(--primary); margin-top: 5px; }
-        
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: white; padding: 12px; border-radius: 15px; box-shadow: var(--shadow); border-bottom: 4px solid #ddd; }
 
@@ -41,13 +37,11 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 12px; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; }
         .btn { flex: 1; border: none; padding: 18px; border-radius: 14px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
 
-        /* Premium Modals */
+        /* Professional Modals */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
         .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; animation: pop 0.3s ease-out; }
         @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
         input { width: 100%; padding: 15px; margin: 10px 0; border: 1.5px solid #eee; border-radius: 12px; font-size: 16px; background: #F8F9FA; outline: none; }
-        input:focus { border-color: var(--primary); background: white; }
     </style>
 </head>
 <body>
@@ -55,7 +49,7 @@
     <div id="login-screen">
         <h1 style="color:var(--primary); font-size: 36px;">Finance Pro</h1>
         <p style="color:#666; margin-top: 10px;">Cloud Money Tracker</p>
-        <button class="login-btn" onclick="window.login()">LOGIN WITH GOOGLE</button>
+        <button class="login-btn" onclick="window.login()">GOOGLE LOGIN</button>
         <p id="auth-status" style="margin-top:20px; color:red; font-size:12px;"></p>
     </div>
 
@@ -107,7 +101,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // Firebase Configuration
@@ -129,12 +123,18 @@
         let transactions = [];
         let currentMode = '';
 
-        // Authentication Logic (Redirect for better Mobile/GitHub compatibility)
-        window.login = () => signInWithRedirect(auth, provider);
-
-        getRedirectResult(auth).catch(e => {
-            document.getElementById('auth-status').innerText = "Login error: " + e.message;
-        });
+        // Authentication Logic
+        window.login = () => {
+            document.getElementById('auth-status').innerText = "Logging in...";
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    console.log("Login Success");
+                })
+                .catch((error) => {
+                    document.getElementById('auth-status').innerText = "Error: " + error.message;
+                    console.error("Login Error:", error);
+                });
+        };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -151,18 +151,16 @@
 
         // Cloud Data Sync
         function startSync() {
-            // Indexing error avoid karne ke liye sirf uid query use kar rahe hain
             const q = query(collection(db, "transactions"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
             onSnapshot(q, (snap) => {
                 transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderUI();
             }, (error) => {
                 console.error("Firestore Error:", error);
-                if(error.code === 'permission-denied') alert("Check Firestore Rules: Read/Write permission restricted.");
+                if(error.code === 'permission-denied') alert("Check Firestore Rules!");
             });
         }
 
-        // UI Controls
         window.openM = (t) => { currentMode = t; document.getElementById('mHeading').innerText = t === 'earning' ? 'Add Income' : 'Add Expense'; document.getElementById('modalBox').style.display = 'flex'; };
         window.closeM = () => { document.getElementById('modalBox').style.display = 'none'; };
 
@@ -179,8 +177,9 @@
                     uid: currentUser.uid 
                 });
                 window.closeM();
-                document.getElementById('amtInput').value = ''; document.getElementById('descInput').value = '';
-            } catch (e) { alert("Save failed: Check Database Rules!"); }
+                document.getElementById('amtInput').value = ''; 
+                document.getElementById('descInput').value = '';
+            } catch (e) { alert("Save failed!"); }
         };
 
         window.askDelete = (id) => {
@@ -232,7 +231,7 @@
 
         window.downloadPDF = () => {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text(`${currentUser.displayName}'s Monthly Report`, 14, 15);
+            doc.text(`${currentUser.displayName}'s Report`, 14, 15);
             const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type.toUpperCase(), i.amount]);
             doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 25 });
             doc.save("Finance_Report.pdf");
