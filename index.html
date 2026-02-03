@@ -3,65 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance Pro Online</title>
+    <title>Finance Pro Premium</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root {
-            --primary: #1A73E8;
-            --success: #00897B;
-            --danger: #D32F2F;
-            --bg: #F8F9FA;
-            --text-main: #202124;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --primary: #1A73E8; --success: #00897B; --danger: #D32F2F;
+            --bg: #F8F9FA; --surface: #FFFFFF; --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg); color: var(--text-main); }
+        body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg); color: #202124; }
 
-        /* Header */
-        .header { 
-            background: linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%); 
-            color: white; padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            position: fixed; top: 0; width: 100%; z-index: 1000; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-        }
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .login-btn { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; font-size: 16px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* Dashboard */
+        /* Main UI */
+        .header { background: linear-gradient(135deg, #1A73E8, #0D47A1); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: var(--shadow); }
         .dashboard { position: fixed; top: 55px; width: 100%; padding: 20px 15px; background: var(--bg); z-index: 900; }
         .main-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
-        .main-card h1 { color: var(--primary); font-size: 32px; margin-top: 5px; }
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: white; padding: 12px; border-radius: 15px; box-shadow: var(--shadow); border-bottom: 4px solid #ddd; }
 
-        /* History List */
-        .history-list { position: absolute; top: 260px; bottom: 85px; width: 100%; overflow-y: auto; padding: 10px 15px; -webkit-overflow-scrolling: touch; }
+        /* Scrollable History */
+        .history-list { position: absolute; top: 265px; bottom: 85px; width: 100%; overflow-y: auto; padding: 10px 15px; -webkit-overflow-scrolling: touch; }
         .tx-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-left: 6px solid #ccc; }
 
-        /* Navigation */
+        /* Actions */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 12px; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; }
-        .btn { flex: 1; border: none; padding: 16px; border-radius: 14px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn { flex: 1; border: none; padding: 18px; border-radius: 14px; color: white; font-size: 16px; font-weight: bold; }
 
-        /* Custom Modal (Premium Popups) */
+        /* Premium Modals */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
-        .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; animation: pop 0.3s ease-out; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
+        .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; animation: pop 0.3s ease-out; }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         input { width: 100%; padding: 15px; margin: 10px 0; border: 1.5px solid #eee; border-radius: 12px; font-size: 16px; background: #F8F9FA; outline: none; }
-        input:focus { border-color: var(--primary); background: white; }
-
-        /* Delete Popup Buttons */
-        .confirm-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .confirm-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div id="login-screen">
+        <h1 style="color:var(--primary); font-size: 32px;">Finance Pro</h1>
+        <p style="color:#666; margin-top: 10px;">Cloud based daily tracking app</p>
+        <button class="login-btn" onclick="window.login()">LOGIN WITH GOOGLE</button>
+    </div>
+
     <div class="header">
-        <h3>Finance Pro Cloud</h3>
+        <h3 id="user-name">Finance Pro</h3>
         <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:22px;">📄</div>
     </div>
 
@@ -76,9 +67,7 @@
         </div>
     </div>
 
-    <div class="history-list" id="transaction-logs">
-        <p style="text-align:center; color:#999; margin-top:20px;">Firebase se data connect ho raha hai...</p>
-    </div>
+    <div class="history-list" id="transaction-logs"></div>
 
     <div class="bottom-nav">
         <button class="btn" style="background:var(--success)" onclick="window.openM('earning')">EARNING</button>
@@ -87,29 +76,29 @@
 
     <div id="modalBox" class="overlay">
         <div class="modal">
-            <h3 id="mTitle" style="margin-bottom:10px;">New Entry</h3>
+            <h3 id="mTitle">Entry</h3>
             <input type="number" id="amtInput" placeholder="Amount (₹)" inputmode="decimal">
-            <input type="text" id="descInput" placeholder="Description (e.g. Fuel, Salary)">
-            <button class="btn" style="background:var(--primary); width:100%; margin-top:10px;" onclick="window.saveToFirebase()">SAVE TO CLOUD</button>
-            <p onclick="window.closeM()" style="text-align:center; color:#999; margin-top:18px; cursor:pointer; font-weight:500;">Cancel</p>
+            <input type="text" id="descInput" placeholder="Description (e.g. Fuel, Ride)">
+            <button class="btn" style="background:var(--primary); width:100%; margin-top:10px;" onclick="window.saveToFirebase()">SAVE ENTRY</button>
+            <p onclick="window.closeM()" style="text-align:center; color:#999; margin-top:18px; cursor:pointer;">Cancel</p>
         </div>
     </div>
 
     <div id="deleteModal" class="overlay">
         <div class="modal" style="text-align:center;">
-            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;">⚠️</div>
-            <h3 style="margin-bottom: 10px;">Delete Transaction?</h3>
-            <p style="color: #666; font-size: 14px;">Kya aap is entry ko cloud se permanently delete karna chahte hain?</p>
-            <div class="confirm-btns">
-                <button class="confirm-btn" style="background:#eee;" onclick="window.closeDeleteM()">NO</button>
-                <button class="confirm-btn" style="background:var(--danger); color:white;" id="confirmDeleteBtn">YES, DELETE</button>
+            <h3 style="margin-bottom: 10px;">Delete Entry?</h3>
+            <p style="color: #666; font-size: 14px;">Kya aap is entry ko Cloud se delete karna chahte hain?</p>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button style="flex:1; padding:12px; border:none; border-radius:10px; background:#eee;" onclick="window.closeDeleteM()">NO</button>
+                <button style="flex:1; padding:12px; border:none; border-radius:10px; background:var(--danger); color:white;" id="confirmDel">YES</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCq6ZTCMeAGhqKH7cZ3d8gn1JSjn7MFkHg",
@@ -117,91 +106,83 @@
             projectId: "finance-pro-a58ef",
             storageBucket: "finance-pro-a58ef.firebasestorage.app",
             messagingSenderId: "441176545235",
-            appId: "1:441176545235:web:5aa38eaf789b6e5ce1c126",
-            measurementId: "G-QW5FDK98R4"
+            appId: "1:441176545235:web:5aa38eaf789b6e5ce1c126"
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
-        const txCol = collection(db, "transactions");
+        const provider = new GoogleAuthProvider();
+        
+        let currentUser = null;
         let transactions = [];
         let mode = '';
-        let pendingDeleteId = null;
 
-        // Entry Modal Functions
-        window.openM = (t) => {
-            mode = t;
-            document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Income' : 'Add Expense';
-            document.getElementById('modalBox').style.display = 'flex';
-            document.getElementById('amtInput').focus();
-        };
-        window.closeM = () => document.getElementById('modalBox').style.display = 'none';
-
-        // Delete Modal Functions
-        window.askDelete = (id) => {
-            pendingDeleteId = id;
-            document.getElementById('deleteModal').style.display = 'flex';
-        };
-        window.closeDeleteM = () => {
-            document.getElementById('deleteModal').style.display = 'none';
-            pendingDeleteId = null;
-        };
-
-        document.getElementById('confirmDeleteBtn').onclick = async () => {
-            if(pendingDeleteId) {
-                await deleteDoc(doc(db, "transactions", pendingDeleteId));
-                window.closeDeleteM();
+        // Authentication Logic
+        window.login = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('user-name').innerText = user.displayName.split(' ')[0];
+                startListening();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
             }
-        };
+        });
+
+        // Data Sync Logic
+        function startListening() {
+            const q = query(collection(db, "transactions"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snap) => {
+                transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                render();
+            });
+        }
+
+        // Global UI Controls
+        window.openM = (t) => { mode = t; document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Income' : 'Add Expense'; document.getElementById('modalBox').style.display = 'flex'; document.getElementById('amtInput').focus(); };
+        window.closeM = () => document.getElementById('modalBox').style.display = 'none';
 
         window.saveToFirebase = async () => {
             const amt = parseFloat(document.getElementById('amtInput').value);
             const dsc = document.getElementById('descInput').value || 'General';
             if(!amt) return;
-            await addDoc(txCol, { amount: amt, type: mode, desc: dsc, timestamp: new Date().toISOString() });
+            await addDoc(collection(db, "transactions"), { amount: amt, type: mode, desc: dsc, timestamp: new Date().toISOString(), uid: currentUser.uid });
             window.closeM();
-            document.getElementById('amtInput').value = '';
-            document.getElementById('descInput').value = '';
+            document.getElementById('amtInput').value = ''; document.getElementById('descInput').value = '';
         };
 
-        // Sync Data
-        onSnapshot(query(txCol, orderBy("timestamp", "desc")), (snap) => {
-            transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            render();
-        });
+        window.askDelete = (id) => { 
+            document.getElementById('deleteModal').style.display = 'flex';
+            document.getElementById('confirmDel').onclick = async () => {
+                await deleteDoc(doc(db, "transactions", id));
+                document.getElementById('deleteModal').style.display = 'none';
+            };
+        };
+        window.closeDeleteM = () => document.getElementById('deleteModal').style.display = 'none';
 
         function render() {
             const logs = document.getElementById('transaction-logs');
             logs.innerHTML = '';
             const today = new Date().toDateString();
             const thisM = new Date().getMonth();
-            const thisY = new Date().getFullYear();
             let tNet = 0, mInc = 0, mExp = 0;
 
             transactions.forEach(i => {
                 const dt = new Date(i.timestamp);
                 const isT = dt.toDateString() === today;
-                const isM = dt.getMonth() === thisM && dt.getFullYear() === thisY;
-
-                if(i.type === 'earning') {
-                    if(isT) tNet += i.amount;
-                    if(isM) mInc += i.amount;
-                } else {
-                    if(isT) tNet -= i.amount;
-                    if(isM) mExp += i.amount;
-                }
+                const isM = dt.getMonth() === thisM;
+                if(i.type === 'earning') { if(isT) tNet += i.amount; if(isM) mInc += i.amount; }
+                else { if(isT) tNet -= i.amount; if(isM) mExp += i.amount; }
 
                 const d = document.createElement('div');
-                d.className = 'tx-card';
-                d.style.borderLeftColor = i.type === 'earning' ? 'var(--success)' : 'var(--danger)';
-                d.innerHTML = `
-                    <div><b>${i.desc}</b><br><small>${dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})} • ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></div>
+                d.className = 'tx-card'; d.style.borderLeftColor = i.type === 'earning' ? 'var(--success)' : 'var(--danger)';
+                d.innerHTML = `<div><b>${i.desc}</b><br><small>${dt.toLocaleDateString()}</small></div>
                     <div style="display:flex;align-items:center;gap:15px">
-                        <span style="font-weight:bold;color:${i.type==='earning'?'var(--success)':'var(--danger)'}">
-                            ${i.type==='earning'?'+':'-'} ₹${i.amount.toLocaleString('en-IN')}
-                        </span>
-                        <span onclick="window.askDelete('${i.id}')" style="color:#ddd;font-size:26px;cursor:pointer;">×</span>
-                    </div>`;
+                    <span style="font-weight:bold;color:${i.type==='earning'?'var(--success)':'var(--danger)'}">${i.type==='earning'?'+':'-'} ₹${i.amount}</span>
+                    <span onclick="window.askDelete('${i.id}')" style="color:#ddd;font-size:26px;cursor:pointer;">×</span></div>`;
                 logs.appendChild(d);
             });
             document.getElementById('today-net').innerText = "₹" + tNet.toLocaleString('en-IN');
@@ -210,15 +191,11 @@
         }
 
         window.downloadPDF = () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("helvetica", "bold");
-            doc.text("Cloud Finance Monthly Report", 14, 15);
-            doc.setFontSize(10);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 22);
-            const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type.toUpperCase(), `INR ${i.amount}`]);
-            doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 28, headStyles: {fillColor: [26, 115, 232]} });
-            doc.save("Finance_Cloud_Report.pdf");
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.text(`${currentUser.displayName}'s Finance Report`, 14, 15);
+            const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type.toUpperCase(), i.amount]);
+            doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 25 });
+            doc.save("Finance_Report.pdf");
         };
     </script>
 </body>
