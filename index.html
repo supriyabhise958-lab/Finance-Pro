@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -14,58 +14,70 @@
             --success: #00897B;
             --danger: #D32F2F;
             --bg: #F8F9FA;
+            --text-main: #202124;
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg); color: var(--text-main); }
 
-        /* Premium UI Elements */
-        .header { background: linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; top:0; width:100%; z-index:1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Header */
+        .header { 
+            background: linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%); 
+            color: white; padding: 15px 20px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: fixed; top: 0; width: 100%; z-index: 1000; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+
+        /* Dashboard */
         .dashboard { position: fixed; top: 55px; width: 100%; padding: 20px 15px; background: var(--bg); z-index: 900; }
         .main-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
-        .main-card h1 { color: var(--primary); font-size: 32px; }
+        .main-card h1 { color: var(--primary); font-size: 32px; margin-top: 5px; }
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: white; padding: 12px; border-radius: 15px; box-shadow: var(--shadow); border-bottom: 4px solid #ddd; }
-        
-        /* Scrollable Area */
+
+        /* History List */
         .history-list { position: absolute; top: 260px; bottom: 85px; width: 100%; overflow-y: auto; padding: 10px 15px; -webkit-overflow-scrolling: touch; }
         .tx-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-left: 6px solid #ccc; }
 
-        /* Actions */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 12px; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .btn { flex: 1; border: none; padding: 16px; border-radius: 14px; color: white; font-size: 16px; font-weight: bold; }
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 12px; padding: 15px; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; }
+        .btn { flex: 1; border: none; padding: 16px; border-radius: 14px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* Custom Modal (Premium Popups) */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; animation: pop 0.3s ease-out; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        /* Modal */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
-        .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; }
-        input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border: 1.5px solid #eee; border-radius: 12px; font-size: 16px; background: #F8F9FA; outline: none; }
+        input:focus { border-color: var(--primary); background: white; }
+
+        /* Delete Popup Buttons */
+        .confirm-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .confirm-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h3>Finance Pro Online</h3>
-        <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:20px;">📄</div>
+        <h3>Finance Pro Cloud</h3>
+        <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:22px;">📄</div>
     </div>
 
     <div class="dashboard">
         <div class="main-card">
-            <small style="color:#666; font-weight:bold;">TODAY'S BALANCE</small>
+            <small style="color:#666; font-weight:bold; letter-spacing:1px;">TODAY'S NET PROFIT</small>
             <h1 id="today-net">₹0</h1>
         </div>
         <div class="stats-row">
-            <div class="stat-box" style="border-color:var(--success)">
-                <small>MONTH INCOME</small><br><span id="m-inc" style="color:var(--success); font-weight:bold;">₹0</span>
-            </div>
-            <div class="stat-box" style="border-color:var(--danger)">
-                <small>MONTH EXPENSE</small><br><span id="m-exp" style="color:var(--danger); font-weight:bold;">₹0</span>
-            </div>
+            <div class="stat-box" style="border-color:var(--success)"><small>MONTH INCOME</small><br><span id="m-inc" style="color:var(--success); font-weight:bold;">₹0</span></div>
+            <div class="stat-box" style="border-color:var(--danger)"><small>MONTH EXPENSE</small><br><span id="m-exp" style="color:var(--danger); font-weight:bold;">₹0</span></div>
         </div>
     </div>
 
     <div class="history-list" id="transaction-logs">
-        <p style="text-align:center; color:#999; margin-top:20px;">Loading data from Firebase...</p>
+        <p style="text-align:center; color:#999; margin-top:20px;">Firebase se data connect ho raha hai...</p>
     </div>
 
     <div class="bottom-nav">
@@ -75,11 +87,23 @@
 
     <div id="modalBox" class="overlay">
         <div class="modal">
-            <h3 id="mTitle">Entry</h3>
+            <h3 id="mTitle" style="margin-bottom:10px;">New Entry</h3>
             <input type="number" id="amtInput" placeholder="Amount (₹)" inputmode="decimal">
-            <input type="text" id="descInput" placeholder="Kahan se? / Kis liye?">
+            <input type="text" id="descInput" placeholder="Description (e.g. Fuel, Salary)">
             <button class="btn" style="background:var(--primary); width:100%; margin-top:10px;" onclick="window.saveToFirebase()">SAVE TO CLOUD</button>
-            <p onclick="window.closeM()" style="text-align:center; color:#999; margin-top:15px; cursor:pointer;">Cancel</p>
+            <p onclick="window.closeM()" style="text-align:center; color:#999; margin-top:18px; cursor:pointer; font-weight:500;">Cancel</p>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="overlay">
+        <div class="modal" style="text-align:center;">
+            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;">⚠️</div>
+            <h3 style="margin-bottom: 10px;">Delete Transaction?</h3>
+            <p style="color: #666; font-size: 14px;">Kya aap is entry ko cloud se permanently delete karna chahte hain?</p>
+            <div class="confirm-btns">
+                <button class="confirm-btn" style="background:#eee;" onclick="window.closeDeleteM()">NO</button>
+                <button class="confirm-btn" style="background:var(--danger); color:white;" id="confirmDeleteBtn">YES, DELETE</button>
+            </div>
         </div>
     </div>
 
@@ -100,64 +124,64 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const txCol = collection(db, "transactions");
-
-        let currentTransactions = [];
+        let transactions = [];
         let mode = '';
+        let pendingDeleteId = null;
 
-        // UI Functions globally accessible
+        // Entry Modal Functions
         window.openM = (t) => {
             mode = t;
-            document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Earning' : 'Add Expense';
+            document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Income' : 'Add Expense';
             document.getElementById('modalBox').style.display = 'flex';
+            document.getElementById('amtInput').focus();
+        };
+        window.closeM = () => document.getElementById('modalBox').style.display = 'none';
+
+        // Delete Modal Functions
+        window.askDelete = (id) => {
+            pendingDeleteId = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        };
+        window.closeDeleteM = () => {
+            document.getElementById('deleteModal').style.display = 'none';
+            pendingDeleteId = null;
         };
 
-        window.closeM = () => {
-            document.getElementById('modalBox').style.display = 'none';
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if(pendingDeleteId) {
+                await deleteDoc(doc(db, "transactions", pendingDeleteId));
+                window.closeDeleteM();
+            }
         };
 
         window.saveToFirebase = async () => {
             const amt = parseFloat(document.getElementById('amtInput').value);
             const dsc = document.getElementById('descInput').value || 'General';
             if(!amt) return;
-
-            try {
-                await addDoc(txCol, {
-                    amount: amt,
-                    type: mode,
-                    desc: dsc,
-                    timestamp: new Date().toISOString()
-                });
-                window.closeM();
-                document.getElementById('amtInput').value = '';
-                document.getElementById('descInput').value = '';
-            } catch (e) { alert("Error saving: " + e.message); }
+            await addDoc(txCol, { amount: amt, type: mode, desc: dsc, timestamp: new Date().toISOString() });
+            window.closeM();
+            document.getElementById('amtInput').value = '';
+            document.getElementById('descInput').value = '';
         };
 
-        window.deleteTx = async (id) => {
-            if(confirm("Cloud se delete karein?")) {
-                await deleteDoc(doc(db, "transactions", id));
-            }
-        };
-
-        // Real-time Data Sync
-        const q = query(txCol, orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            currentTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateUI();
+        // Sync Data
+        onSnapshot(query(txCol, orderBy("timestamp", "desc")), (snap) => {
+            transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            render();
         });
 
-        function updateUI() {
+        function render() {
             const logs = document.getElementById('transaction-logs');
             logs.innerHTML = '';
-            
             const today = new Date().toDateString();
             const thisM = new Date().getMonth();
+            const thisY = new Date().getFullYear();
             let tNet = 0, mInc = 0, mExp = 0;
 
-            currentTransactions.forEach(i => {
+            transactions.forEach(i => {
                 const dt = new Date(i.timestamp);
                 const isT = dt.toDateString() === today;
-                const isM = dt.getMonth() === thisM;
+                const isM = dt.getMonth() === thisM && dt.getFullYear() === thisY;
 
                 if(i.type === 'earning') {
                     if(isT) tNet += i.amount;
@@ -171,29 +195,30 @@
                 d.className = 'tx-card';
                 d.style.borderLeftColor = i.type === 'earning' ? 'var(--success)' : 'var(--danger)';
                 d.innerHTML = `
-                    <div><b>${i.desc}</b><br><small>${dt.toLocaleDateString()}</small></div>
-                    <div style="display:flex; align-items:center; gap:12px">
-                        <span style="font-weight:bold; color:${i.type === 'earning' ? 'var(--success)' : 'var(--danger)'}">
-                            ${i.type === 'earning' ? '+' : '-'} ₹${i.amount}
+                    <div><b>${i.desc}</b><br><small>${dt.toLocaleDateString('en-IN', {day:'2-digit', month:'short'})} • ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></div>
+                    <div style="display:flex;align-items:center;gap:15px">
+                        <span style="font-weight:bold;color:${i.type==='earning'?'var(--success)':'var(--danger)'}">
+                            ${i.type==='earning'?'+':'-'} ₹${i.amount.toLocaleString('en-IN')}
                         </span>
-                        <span onclick="window.deleteTx('${i.id}')" style="color:#ddd; font-size:24px;">×</span>
+                        <span onclick="window.askDelete('${i.id}')" style="color:#ddd;font-size:26px;cursor:pointer;">×</span>
                     </div>`;
                 logs.appendChild(d);
             });
-
-            document.getElementById('today-net').innerText = "₹" + tNet;
-            document.getElementById('m-inc').innerText = "₹" + mInc;
-            document.getElementById('m-exp').innerText = "₹" + mExp;
+            document.getElementById('today-net').innerText = "₹" + tNet.toLocaleString('en-IN');
+            document.getElementById('m-inc').innerText = "₹" + mInc.toLocaleString('en-IN');
+            document.getElementById('m-exp').innerText = "₹" + mExp.toLocaleString('en-IN');
         }
 
-        // PDF Logic
         window.downloadPDF = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("Cloud Finance Report", 14, 15);
-            const rows = currentTransactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type.toUpperCase(), i.amount]);
-            doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 25 });
-            doc.save("Cloud_Report.pdf");
+            doc.setFont("helvetica", "bold");
+            doc.text("Cloud Finance Monthly Report", 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 22);
+            const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type.toUpperCase(), `INR ${i.amount}`]);
+            doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 28, headStyles: {fillColor: [26, 115, 232]} });
+            doc.save("Finance_Cloud_Report.pdf");
         };
     </script>
 </body>
