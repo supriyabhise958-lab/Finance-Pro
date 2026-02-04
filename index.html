@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance Pro Premium</title>
+    <title>Finance Pro Open</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --primary: #1A73E8; --success: #00897B; --danger: #D32F2F; --bg: #F8F9FA; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: var(--bg); height: 100vh; overflow: hidden; }
-        #login-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #app-content { display: none; }
+        
         .header { background: linear-gradient(135deg, #1A73E8, #0D47A1); color: white; padding: 15px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; }
         .dashboard { position: fixed; top: 60px; width: 100%; padding: 15px; background: var(--bg); z-index: 900; }
         .main-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
         .history { position: absolute; top: 270px; bottom: 85px; width: 100%; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
         .tx-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
         .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 10px; padding: 15px; background: white; box-shadow: 0 -5px 10px rgba(0,0,0,0.05); }
         .btn { flex: 1; border: none; padding: 16px; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; }
+        
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; }
         input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
@@ -26,28 +28,24 @@
 </head>
 <body>
 
-    <div id="login-screen">
-        <h1 style="color:var(--primary); margin-bottom:30px;">Finance Pro</h1>
-        <button onclick="window.login()" style="background:var(--primary); color:white; border:none; padding:15px 30px; border-radius:50px; font-weight:bold; cursor:pointer;">GOOGLE LOGIN</button>
+    <div class="header">
+        <h3>Finance Pro Cloud</h3>
+        <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:22px;">📄</div>
     </div>
 
-    <div id="app-content">
-        <div class="header">
-            <h3 id="user-display">Finance Pro</h3>
-            <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:22px;">📄</div>
+    <div class="dashboard">
+        <div class="main-card"><small>TODAY'S NET PROFIT</small><h1 id="today-net">₹0</h1></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+            <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--success)"><small>INCOME</small><br><b id="m-inc" style="color:var(--success)">₹0</b></div>
+            <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--danger)"><small>EXPENSE</small><br><b id="m-exp" style="color:var(--danger)">₹0</b></div>
         </div>
-        <div class="dashboard">
-            <div class="main-card"><small>TODAY'S NET PROFIT</small><h1 id="today-net">₹0</h1></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--success)"><small>INCOME</small><br><b id="m-inc" style="color:var(--success)">₹0</b></div>
-                <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--danger)"><small>EXPENSE</small><br><b id="m-exp" style="color:var(--danger)">₹0</b></div>
-            </div>
-        </div>
-        <div class="history" id="tx-logs"></div>
-        <div class="bottom-nav">
-            <button class="btn" style="background:var(--success)" onclick="window.openM('earning')">EARNING</button>
-            <button class="btn" style="background:var(--danger)" onclick="window.openM('expense')">EXPENSE</button>
-        </div>
+    </div>
+
+    <div class="history" id="tx-logs"></div>
+
+    <div class="bottom-nav">
+        <button class="btn" style="background:var(--success)" onclick="window.openM('earning')">EARNING</button>
+        <button class="btn" style="background:var(--danger)" onclick="window.openM('expense')">EXPENSE</button>
     </div>
 
     <div id="modalBox" class="overlay">
@@ -62,9 +60,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCq6ZTCMeAGhqKH7cZ3d8gn1JSjn7MFkHg",
             authDomain: "finance-pro-a58ef.firebaseapp.com",
@@ -75,54 +73,40 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-        let currentUser = null;
         let transactions = [];
         let mode = '';
 
-        window.login = () => signInWithRedirect(auth, provider);
-        
-        getRedirectResult(auth).catch(e => console.error(e));
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                document.getElementById('user-display').innerText = user.displayName.split(' ')[0];
-                startSync();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('app-content').style.display = 'none';
-            }
-        });
-
+        // Auto Sync: Ab bina login ke sabka data ek hi jagah dikhega
         function startSync() {
-            const q = query(collection(db, "transactions"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            const q = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
             onSnapshot(q, (snap) => {
                 transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 render();
-            }, (err) => {
-                console.error("Firestore Error:", err);
             });
         }
+        startSync();
 
-        window.openM = (t) => { mode = t; document.getElementById('modalBox').style.display = 'flex'; };
+        window.openM = (t) => { mode = t; document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Income' : 'Add Expense'; document.getElementById('modalBox').style.display = 'flex'; };
         window.closeM = () => { document.getElementById('modalBox').style.display = 'none'; };
 
         window.saveData = async () => {
             const amt = parseFloat(document.getElementById('amtIn').value);
             const desc = document.getElementById('descIn').value || 'General';
             if(!amt) return;
-            await addDoc(collection(db, "transactions"), { amount: amt, type: mode, desc: desc, timestamp: new Date().toISOString(), uid: currentUser.uid });
+            await addDoc(collection(db, "transactions"), { 
+                amount: amt, 
+                type: mode, 
+                desc: desc, 
+                timestamp: new Date().toISOString() 
+            });
             window.closeM();
-            document.getElementById('amtIn').value = ''; document.getElementById('descIn').value = '';
+            document.getElementById('amtIn').value = ''; 
+            document.getElementById('descIn').value = '';
         };
 
         window.deleteTx = async (id) => {
-            if(confirm("Delete karein?")) await deleteDoc(doc(db, "transactions", id));
+            if(confirm("Cloud se delete karein?")) await deleteDoc(doc(db, "transactions", id));
         };
 
         function render() {
@@ -151,10 +135,10 @@
 
         window.downloadPDF = () => {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text(`Monthly Report`, 14, 15);
+            doc.text(`Finance Report`, 14, 15);
             const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type, i.amount]);
             doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 25 });
-            doc.save("Report.pdf");
+            doc.save("Finance_Report.pdf");
         };
     </script>
 </body>
