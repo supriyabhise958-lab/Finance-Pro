@@ -3,58 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance Pro Open</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <title>Finance Pro Master Elite - Official</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <style>
-        :root { --primary: #1A73E8; --success: #00897B; --danger: #D32F2F; --bg: #F8F9FA; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: var(--bg); height: 100vh; overflow: hidden; }
+        :root { --primary: #1E3A8A; --accent: #3B82F6; --success: #059669; --danger: #DC2626; --warning: #D97706; --bg: #F8FAFC; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #0F172A; height: 100vh; overflow: hidden; }
+
+        /* Header */
+        .app-bar { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid #E2E8F0; position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .scroller { position: fixed; top: 70px; bottom: 85px; width: 100%; overflow-y: auto; padding: 15px; scrollbar-width: none; }
+        .scroller::-webkit-scrollbar { display: none; }
+
+        /* Dashboard Card */
+        .main-card { background: linear-gradient(135deg, #1E3A8A 0%, #1E1B4B 100%); color: white; border-radius: 30px; padding: 22px; box-shadow: 0 15px 25px rgba(30,58,138,0.2); margin-bottom: 20px; }
+        .target-progress { margin-top: 15px; background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #60A5FA; width: 0%; transition: 1s ease-in-out; }
+
+        .emi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .emi-box { font-size: 11px; opacity: 0.8; }
+        .emi-box b { display: block; font-size: 13px; margin-top: 2px; color: #DBEAFE; }
+
+        /* AI Signal Box */
+        .coach-card { background: white; border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 15px; border-left: 5px solid var(--primary); }
+        .sig-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        .filter-row { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .chip { padding: 8px 15px; border-radius: 12px; background: white; border: 1px solid #E2E8F0; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .tx-item { background: white; padding: 14px; border-radius: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #F1F5F9; }
+
+        /* Navigation */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 75px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #F1F5F9; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748B; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .fab { width: 58px; height: 58px; background: var(--primary); color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; transform: translateY(-20px); border: 5px solid var(--bg); box-shadow: 0 8px 15px rgba(30,58,138,0.2); }
+
+        /* Modals */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: flex-end; backdrop-filter: blur(4px); }
+        .sheet { background: white; width: 100%; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 14px; margin: 8px 0; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; font-size: 15px; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--primary); background: white; }
+        .btn-prime { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 15px; margin-top: 10px; cursor: pointer; active { transform: scale(0.98); } }
         
-        .header { background: linear-gradient(135deg, #1A73E8, #0D47A1); color: white; padding: 15px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; }
-        .dashboard { position: fixed; top: 60px; width: 100%; padding: 15px; background: var(--bg); z-index: 900; }
-        .main-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        
-        .history { position: absolute; top: 270px; bottom: 85px; width: 100%; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
-        .tx-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; gap: 10px; padding: 15px; background: white; box-shadow: 0 -5px 10px rgba(0,0,0,0.05); }
-        .btn { flex: 1; border: none; padding: 16px; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; }
-        
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        .modal { background: white; width: 85%; padding: 25px; border-radius: 20px; }
-        input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        .emi-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .delete-btn { color: var(--danger); background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; padding: 0 5px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h3>Finance Pro Cloud</h3>
-        <div onclick="window.downloadPDF()" style="cursor:pointer; font-size:22px;">📄</div>
+    <div class="app-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:38px; height:38px; border-radius:10px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">SB</div>
+            <div><b id="period-title">Elite Hub</b><br><small id="date-label" style="color:gray; font-size:11px;"></small></div>
+        </div>
+        <span class="material-symbols-rounded" onclick="window.openSettings()" style="cursor:pointer; color:var(--primary); font-size:28px;">settings_applications</span>
     </div>
 
-    <div class="dashboard">
-        <div class="main-card"><small>TODAY'S NET PROFIT</small><h1 id="today-net">₹0</h1></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-            <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--success)"><small>INCOME</small><br><b id="m-inc" style="color:var(--success)">₹0</b></div>
-            <div style="background:white; padding:10px; border-radius:12px; border-bottom:4px solid var(--danger)"><small>EXPENSE</small><br><b id="m-exp" style="color:var(--danger)">₹0</b></div>
+    <div class="scroller">
+        <div class="main-card">
+            <small style="opacity:0.8; letter-spacing:1px;">TODAY'S NET PROFIT</small>
+            <h1 id="net-val" style="font-size:34px; margin:4px 0;">₹0</h1>
+            
+            <div class="target-progress"><div id="progress-bar" class="progress-fill"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:11px;">
+                <span id="goal-text">Goal: ₹0</span>
+                <span id="percent-label">0% Achieved</span>
+            </div>
+            
+            <div id="emi-display-grid" class="emi-grid"></div>
+        </div>
+
+        <div class="filter-row">
+            <button class="chip active" onclick="window.setFilter('all', this)">Sari History</button>
+            <button class="chip" onclick="window.setFilter('today', this)">Aaj Ka</button>
+            <button class="chip" onclick="window.setFilter('month', this)">Mahina</button>
+        </div>
+
+        <div class="coach-card">
+            <div id="sig-bg" class="sig-icon" style="background:#E0E7FF; color:var(--primary);"><span id="sig-icon" class="material-symbols-rounded">psychology</span></div>
+            <div style="flex:1;">
+                <b id="sig-title">Assistant Status</b><br>
+                <small id="sig-msg" style="color:gray; font-size:12px;">Syncing with Firebase...</small>
+            </div>
+        </div>
+
+        <div style="background:white; border-radius:20px; padding:10px; margin-bottom:15px; border:1px solid #F1F5F9;">
+            <canvas id="pChart" height="140"></canvas>
+        </div>
+
+        <h3 style="margin:10px 5px; font-size:15px; color:#64748B;">HISTORY LOG</h3>
+        <div id="log-list"></div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="window.setFilter('all')"><span class="material-symbols-rounded">grid_view</span>Home</div>
+        <div class="fab" onclick="window.openEntry()"><span class="material-symbols-rounded">add</span></div>
+        <div class="nav-item" onclick="window.openSettings()"><span class="material-symbols-rounded">manage_accounts</span>Plan</div>
+    </div>
+
+    <div id="entrySheet" class="overlay">
+        <div class="sheet">
+            <h3>New Transaction</h3>
+            <select id="typeIn" onchange="window.updateCats()">
+                <option value="earning">💰 Earning / Sawari</option>
+                <option value="expense">💸 Kharcha / Expense</option>
+            </select>
+            <input type="number" id="amtIn" placeholder="Amount (₹)" inputmode="decimal">
+            <select id="catIn"></select>
+            <button class="btn-prime" onclick="window.saveData()">Confirm Entry</button>
+            <p onclick="window.closeSheets()" style="text-align:center; margin-top:15px; color:gray; cursor:pointer; font-size:14px;">Cancel</p>
         </div>
     </div>
 
-    <div class="history" id="tx-logs"></div>
+    <div id="settingsSheet" class="overlay">
+        <div class="sheet">
+            <h3 style="margin-bottom:15px;">Business Planner</h3>
+            <label style="font-size:12px; font-weight:bold; color:var(--primary);">DAILY GOAL TARGET (₹)</label>
+            <input type="number" id="dailyGoal" placeholder="Rozana kitna kamana hai?">
 
-    <div class="bottom-nav">
-        <button class="btn" style="background:var(--success)" onclick="window.openM('earning')">EARNING</button>
-        <button class="btn" style="background:var(--danger)" onclick="window.openM('expense')">EXPENSE</button>
-    </div>
+            <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:12px; font-weight:bold; color:var(--danger);">EMI & MONTHLY BILLS (₹)</label>
+                <button onclick="window.addNewEmiField()" style="font-size:11px; color:var(--accent); border:none; background:none; font-weight:bold; cursor:pointer;">+ ADD NEW</button>
+            </div>
+            <div id="emi-input-container"></div>
 
-    <div id="modalBox" class="overlay">
-        <div class="modal">
-            <h3 id="mTitle">Entry</h3>
-            <input type="number" id="amtIn" placeholder="Amount (₹)" inputmode="decimal">
-            <input type="text" id="descIn" placeholder="Details">
-            <button class="btn" style="background:var(--primary); width:100%;" onclick="window.saveData()">SAVE</button>
-            <p onclick="window.closeM()" style="text-align:center; margin-top:15px; cursor:pointer; color:gray;">Cancel</p>
+            <button class="btn-prime" style="background:var(--success)" onclick="window.saveSettings()">UPDATE BUSINESS PLAN</button>
+            <p onclick="window.closeSheets()" style="text-align:center; margin-top:15px; color:gray; cursor:pointer; font-size:14px;">Close</p>
         </div>
     </div>
 
@@ -62,7 +139,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Configuration
+        // Firebase Config (Already Protected)
         const firebaseConfig = {
             apiKey: "AIzaSyCq6ZTCMeAGhqKH7cZ3d8gn1JSjn7MFkHg",
             authDomain: "finance-pro-a58ef.firebaseapp.com",
@@ -75,71 +152,169 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let transactions = [];
-        let mode = '';
+        let filterMode = 'all';
+        let chart = null;
 
-        // Auto Sync: Ab bina login ke sabka data ek hi jagah dikhega
-        function startSync() {
-            const q = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snap) => {
-                transactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                render();
+        document.getElementById('date-label').innerText = new Date().toLocaleDateString('hi-IN', {day:'numeric', month:'long'});
+
+        // Firebase Sync Logic
+        onSnapshot(query(collection(db, "transactions"), orderBy("timestamp", "desc")), (snap) => {
+            transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            render();
+        });
+
+        // Window Bindings (Ensures buttons work)
+        window.openEntry = () => { document.getElementById('entrySheet').style.display = 'flex'; window.updateCats(); };
+        window.closeSheets = () => document.querySelectorAll('.overlay').forEach(s => s.style.display = 'none');
+        
+        window.openSettings = () => {
+            document.getElementById('settingsSheet').style.display = 'flex';
+            document.getElementById('dailyGoal').value = localStorage.getItem('dailyGoal') || '';
+            const container = document.getElementById('emi-input-container');
+            container.innerHTML = '';
+            const savedEmis = JSON.parse(localStorage.getItem('emis') || '[]');
+            if(savedEmis.length === 0) window.addNewEmiField('Auto EMI', 0);
+            else savedEmis.forEach(e => window.addNewEmiField(e.name, e.amount));
+        };
+
+        window.addNewEmiField = (name = '', amt = '') => {
+            const div = document.createElement('div');
+            div.className = 'emi-input-row';
+            div.innerHTML = `
+                <input type="text" placeholder="Bill Name" value="${name}" style="flex:2">
+                <input type="number" placeholder="Monthly ₹" value="${amt}" style="flex:1">
+                <button onclick="this.parentElement.remove()" class="delete-btn">&times;</button>
+            `;
+            document.getElementById('emi-input-container').appendChild(div);
+        };
+
+        window.saveSettings = () => {
+            localStorage.setItem('dailyGoal', document.getElementById('dailyGoal').value);
+            const emis = [];
+            document.querySelectorAll('.emi-input-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if(inputs[0].value) emis.push({ name: inputs[0].value, amount: parseFloat(inputs[1].value) || 0 });
             });
-        }
-        startSync();
+            localStorage.setItem('emis', JSON.stringify(emis));
+            window.closeSheets(); render();
+        };
 
-        window.openM = (t) => { mode = t; document.getElementById('mTitle').innerText = t === 'earning' ? 'Add Income' : 'Add Expense'; document.getElementById('modalBox').style.display = 'flex'; };
-        window.closeM = () => { document.getElementById('modalBox').style.display = 'none'; };
+        window.updateCats = () => {
+            const type = document.getElementById('typeIn').value;
+            const cat = document.getElementById('catIn');
+            cat.innerHTML = type === 'earning' 
+                ? `<option value="🛺 Sawari">🛺 Sawari</option><option value="💰 Bonus">💰 Extra Tip</option>`
+                : `<option value="⛽ Fuel">⛽ Fuel</option><option value="🛠️ Repair">🛠️ Repair</option><option value="🍲 Food">🍲 Food/Tea</option><option value="🏠 Ghar">🏠 Ghar Kharch</option>`;
+        };
 
         window.saveData = async () => {
             const amt = parseFloat(document.getElementById('amtIn').value);
-            const desc = document.getElementById('descIn').value || 'General';
-            if(!amt) return;
-            await addDoc(collection(db, "transactions"), { 
-                amount: amt, 
-                type: mode, 
-                desc: desc, 
-                timestamp: new Date().toISOString() 
+            if(!amt || amt <= 0) return;
+            await addDoc(collection(db, "transactions"), {
+                amount: amt, type: document.getElementById('typeIn').value, 
+                category: document.getElementById('catIn').value, timestamp: new Date().toISOString()
             });
-            window.closeM();
-            document.getElementById('amtIn').value = ''; 
-            document.getElementById('descIn').value = '';
+            document.getElementById('amtIn').value = '';
+            window.closeSheets();
         };
 
-        window.deleteTx = async (id) => {
-            if(confirm("Cloud se delete karein?")) await deleteDoc(doc(db, "transactions", id));
+        window.deleteTx = async (id) => { if(confirm("Kya aap ise delete karna chahte hain?")) await deleteDoc(doc(db, "transactions", id)); };
+
+        window.setFilter = (mode, btn) => {
+            filterMode = mode;
+            if(btn) {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            render();
         };
 
         function render() {
-            const logs = document.getElementById('tx-logs');
-            logs.innerHTML = '';
-            const today = new Date().toDateString();
-            let tNet = 0, mInc = 0, mExp = 0;
+            const list = document.getElementById('log-list'); list.innerHTML = '';
+            const todayStr = new Date().toDateString();
+            const thisMonth = new Date().getMonth();
 
-            transactions.forEach(i => {
-                const dt = new Date(i.timestamp);
-                if(i.type === 'earning') { if(dt.toDateString() === today) tNet += i.amount; mInc += i.amount; }
-                else { if(dt.toDateString() === today) tNet -= i.amount; mExp += i.amount; }
+            let todayInc = 0, todayExp = 0, filteredNet = 0;
+            const goal = parseFloat(localStorage.getItem('dailyGoal')) || 0;
+            const emis = JSON.parse(localStorage.getItem('emis') || '[]');
+            let totalDailyEmi = 0;
 
-                const d = document.createElement('div');
-                d.className = 'tx-card'; d.style.borderLeftColor = i.type === 'earning' ? 'var(--success)' : 'var(--danger)';
-                d.innerHTML = `<div><b>${i.desc}</b><br><small>${dt.toLocaleDateString()}</small></div>
-                    <div style="display:flex;align-items:center;gap:15px">
-                    <span style="font-weight:bold;color:${i.type==='earning'?'var(--success)':'var(--danger)'}">₹${i.amount}</span>
-                    <span onclick="window.deleteTx('${i.id}')" style="color:#ddd;font-size:24px;cursor:pointer;">×</span></div>`;
-                logs.appendChild(d);
+            // EMI Grid View
+            const emiGrid = document.getElementById('emi-display-grid');
+            emiGrid.innerHTML = '';
+            emis.forEach(e => {
+                const daily = e.amount / 30;
+                totalDailyEmi += daily;
+                const div = document.createElement('div');
+                div.className = 'emi-box';
+                div.innerHTML = `${e.name}<br><b>₹${daily.toFixed(0)}</b>`;
+                emiGrid.appendChild(div);
             });
-            document.getElementById('today-net').innerText = "₹" + tNet;
-            document.getElementById('m-inc').innerText = "₹" + mInc;
-            document.getElementById('m-exp').innerText = "₹" + mExp;
+
+            transactions.forEach(t => {
+                const dt = new Date(t.timestamp);
+                const isToday = dt.toDateString() === todayStr;
+                const isMonth = dt.getMonth() === thisMonth;
+
+                if(isToday) { if(t.type === 'earning') todayInc += t.amount; else todayExp += t.amount; }
+
+                let show = (filterMode === 'all') || (filterMode === 'today' && isToday) || (filterMode === 'month' && isMonth);
+
+                if(show) {
+                    filteredNet += (t.type === 'earning' ? t.amount : -t.amount);
+                    const d = document.createElement('div');
+                    d.className = 'tx-item';
+                    d.innerHTML = `<div><b>${t.category}</b><br><small style="color:gray; font-size:10px;">${dt.toLocaleDateString()}</small></div>
+                    <div style="display:flex; gap:10px; align-items:center;"><b style="color:${t.type==='earning'?'var(--success)':'var(--danger)'}">₹${t.amount}</b>
+                    <span class="material-symbols-rounded" onclick="window.deleteTx('${t.id}')" style="color:#CBD5E1; cursor:pointer; font-size:18px;">delete</span></div>`;
+                    list.appendChild(d);
+                }
+            });
+
+            // Dashboard Updates
+            document.getElementById('net-val').innerText = "₹" + (todayInc - todayExp).toLocaleString('en-IN');
+            document.getElementById('goal-text').innerText = "Goal: ₹" + goal;
+            const percent = goal > 0 ? Math.min(100, (todayInc / goal) * 100) : 0;
+            document.getElementById('progress-bar').style.width = percent + "%";
+            document.getElementById('percent-label').innerText = Math.round(percent) + "% Achieved";
+
+            // Advanced AI Coach Logic
+            const sigT = document.getElementById('sig-title'); const sigM = document.getElementById('sig-msg');
+            const sigB = document.getElementById('sig-bg');
+            
+            if(todayInc === 0) {
+                sigT.innerText = "Namaste Suraj!"; sigM.innerText = "Aaj ka kaam shuru karein, Good Luck!";
+                sigB.style.color = "#475569";
+            } else if(todayInc < totalDailyEmi) {
+                const req = (totalDailyEmi - todayInc).toFixed(0);
+                sigT.innerText = "EMI Target Check"; sigM.innerText = `EMI poori karne ke liye abhi ₹${req} aur kamana baaki hai.`;
+                sigB.style.color = "var(--danger)";
+            } else if(todayInc < goal) {
+                const rem = (goal - todayInc).toFixed(0);
+                sigT.innerText = "Progress Good"; sigM.innerText = `Target ke kareeb hain! ₹${rem} aur, fir goal complete.`;
+                sigB.style.color = "var(--warning)";
+            } else {
+                sigT.innerText = "Excellent Job! 🚀"; sigM.innerText = "Goal poora hua! Ab jo bhi kamaoge wo pure profit hai.";
+                sigB.style.color = "var(--success)";
+            }
+            updateChartLogic();
         }
 
-        window.downloadPDF = () => {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.text(`Finance Report`, 14, 15);
-            const rows = transactions.map(i => [new Date(i.timestamp).toLocaleDateString(), i.desc, i.type, i.amount]);
-            doc.autoTable({ head: [['Date', 'Description', 'Type', 'Amount']], body: rows, startY: 25 });
-            doc.save("Finance_Report.pdf");
-        };
+        function updateChartLogic() {
+            const days = []; const data = [];
+            for(let i=6; i>=0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                days.push(d.toLocaleDateString('hi-IN', {weekday:'short'}));
+                let net = 0;
+                transactions.forEach(t => { if(new Date(t.timestamp).toDateString() === d.toDateString()) net += (t.type==='earning'?t.amount:-t.amount); });
+                data.push(net);
+            }
+            if(chart) chart.destroy();
+            chart = new Chart(document.getElementById('pChart'), {
+                type: 'line', data: { labels: days, datasets: [{ data, borderColor: '#3B82F6', tension: 0.4, fill: true, backgroundColor: 'rgba(59,130,246,0.05)', borderWidth: 3, pointRadius: 0 }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+        }
     </script>
 </body>
 </html>
