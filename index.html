@@ -2,146 +2,189 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance Pro AI - Suraj Bhise Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Suraj AI Pro Master</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     <style>
-        :root { --primary: #1E3A8A; --success: #10B981; --danger: #EF4444; --warning: #F59E0B; --bg: #F3F4F6; --ai-purple: #6366F1; }
+        :root { --primary: #1E3A8A; --accent: #6366F1; --success: #10B981; --danger: #EF4444; --warning: #F59E0B; --bg: #F8FAFC; --surface: #FFFFFF; }
+        
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #1E293B; height: 100vh; overflow: hidden; }
+        
+        body { background: var(--bg); color: #0F172A; height: 100vh; overflow: hidden; position: fixed; width: 100%; }
 
-        .header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid #E5E7EB; position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .scroller { position: fixed; top: 70px; bottom: 85px; width: 100%; overflow-y: auto; padding: 15px; }
-        .scroller::-webkit-scrollbar { display: none; }
+        /* Header Style */
+        .app-bar { height: 70px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; background: var(--surface); border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .logo-circle { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
+        
+        /* Main Viewport */
+        .main-container { height: calc(100vh - 150px); overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
+        .main-container::-webkit-scrollbar { display: none; }
 
-        /* Dashboard Cards */
-        .card-main { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); color: white; border-radius: 28px; padding: 22px; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .health-bar-bg { height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .health-bar-fill { height: 100%; transition: 1s ease; border-radius: 10px; }
-        .grid-emi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px; }
-        .emi-box { font-size: 11px; opacity: 0.9; }
+        /* Premium Dashboard Card */
+        .dashboard-card { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); color: white; border-radius: 32px; padding: 25px; margin-bottom: 20px; box-shadow: 0 15px 30px rgba(15,23,42,0.15); position: relative; overflow: hidden; }
+        .dashboard-card::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+        
+        #net-display { font-size: 45px; margin: 8px 0; font-weight: 800; letter-spacing: -1.5px; }
+        .progress-rail { height: 10px; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 18px 0; position: relative; }
+        #health-fill { height: 100%; border-radius: 20px; transition: 1.5s cubic-bezier(0.1, 0.7, 0.1, 1); width: 0%; }
 
-        /* Full Screen QR Overlay */
-        #qrOverlay { display: none; position: fixed; inset: 0; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        #fullQrCode { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); margin: 30px 0; }
-        .back-btn { position: absolute; top: 30px; left: 20px; display: flex; align-items: center; color: var(--primary); font-weight: 900; cursor: pointer; }
+        /* AI Mind Section */
+        .ai-status-card { background: var(--surface); border-radius: 24px; padding: 20px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .ai-icon-pulse { color: var(--accent); font-size: 35px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.5; transform: scale(0.9); } }
 
-        /* Nav & List */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 80px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #E5E7EB; }
-        .fab { width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; transform: translateY(-20px); border: 5px solid var(--bg); }
-        .tx-item { background: white; padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #F1F5F9; }
-        .del-icon { color: #CBD5E1; font-size: 20px; cursor: pointer; padding: 5px; }
+        /* Bottom Navigation Bar */
+        .bottom-nav { height: 80px; background: var(--surface); position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #E2E8F0; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94A3B8; cursor: pointer; border: none; background: none; transition: 0.3s; width: 20%; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn .material-symbols-rounded { font-size: 28px; }
+        .nav-label { font-size: 11px; font-weight: 600; }
+        
+        /* Floating Action Button */
+        .fab { width: 62px; height: 62px; background: var(--primary); color: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; transform: translateY(-30px); border: 5px solid var(--bg); box-shadow: 0 10px 20px rgba(30,58,138,0.3); }
 
-        /* Sheets & Forms */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: flex-end; backdrop-filter: blur(5px); }
-        .sheet { background: white; width: 100%; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; background: #F3F4F6; border: none; font-size: 16px; outline: none; }
-        .btn-action { width: 100%; padding: 18px; border: none; border-radius: 15px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .stat-box { background: #F8FAFC; padding: 15px; border-radius: 15px; border-left: 4px solid var(--primary); }
+        /* Bottom Sheet Style */
+        .sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 2000; align-items: flex-end; backdrop-filter: blur(8px); }
+        .bottom-sheet { background: var(--surface); width: 100%; border-radius: 35px 35px 0 0; padding: 30px; position: relative; max-height: 85vh; overflow-y: auto; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .close-btn { width: 40px; height: 40px; background: #F1F5F9; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748B; }
+
+        /* Inputs & Buttons */
+        input, select { width: 100%; padding: 16px; margin: 10px 0; border-radius: 16px; background: #F8FAFC; border: 1px solid #E2E8F0; font-size: 16px; font-weight: 500; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); background: white; }
+        .primary-btn { width: 100%; padding: 18px; border: none; border-radius: 18px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; box-shadow: 0 8px 20px rgba(30,58,138,0.2); }
+
+        /* Tx List Style */
+        .tx-card { background: white; padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #F1F5F9; }
+        .tx-info b { font-size: 15px; color: #1E293B; }
+        .tx-info small { color: #94A3B8; font-weight: 600; }
+        .tx-amt { font-size: 16px; font-weight: 800; }
+
+        /* Scanner */
+        #qrView { display: none; position: fixed; inset: 0; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <div style="width:35px; height:35px; border-radius:8px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">SB</div>
-            <div><b style="font-size:14px;">Suraj AI Business Pro</b></div>
+    <div class="app-bar">
+        <div class="logo-box">
+            <div class="logo-circle">SB</div>
+            <div>
+                <b style="font-size:16px; color:#0F172A;">Suraj Pro Master</b><br>
+                <small id="date-label" style="color:var(--success); font-weight:700; font-size:11px;">● LIVE: 8 FEB</small>
+            </div>
         </div>
-        <div style="display:flex; gap:6px;">
-            <button class="btn-top" onclick="window.downloadPDF()" style="border:1px solid #ddd; background:#fff; padding:5px 10px; border-radius:8px; font-size:12px;">Report</button>
-            <button class="btn-top" onclick="window.saveCurrentLocation()" style="border:1px solid #ddd; background:#fff; padding:5px 10px; border-radius:8px;"><span class="material-symbols-rounded" style="font-size:18px; color:var(--success);">location_on</span></button>
-        </div>
+        <button class="close-btn" onclick="window.location.reload()"><span class="material-symbols-rounded">refresh</span></button>
     </div>
 
-    <div class="scroller">
-        <div class="card-main">
-            <small style="opacity:0.8; font-weight:bold;">DAILY NET PROFIT</small>
-            <h1 id="net-display" style="font-size:45px; margin:5px 0;">₹0</h1>
-            <div class="health-bar-bg"><div id="health-fill" class="health-bar-fill" style="width:5%; background:var(--danger);"></div></div>
-            <div style="display:flex; justify-content:space-between; font-size:12px;">
-                <span id="target-info">Target: ₹0</span>
-                <span id="health-status">Checking...</span>
+    <div class="main-container">
+        <div class="dashboard-card">
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <small style="opacity:0.8; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Net Profit Today</small>
+                <span id="emi-tag" style="background:rgba(255,255,255,0.15); padding:6px 12px; border-radius:10px; font-size:11px; font-weight:800;">EMI: ₹0</span>
             </div>
-            <div id="emi-summary" class="grid-emi"></div>
+            <div id="net-display">₹0.00</div>
+            <div class="progress-rail">
+                <div id="health-fill"></div>
+            </div>
+            <div id="emi-quick-list" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:2px;"></div>
         </div>
 
-        <div id="aiCoach" class="tx-item" style="border-left: 6px solid var(--ai-purple); display:flex; gap:15px; align-items:center;">
-            <span class="material-symbols-rounded" style="color:var(--ai-purple); font-size:35px;">psychology</span>
+        <div class="ai-status-card">
+            <span class="material-symbols-rounded ai-icon-pulse">psychology_alt</span>
             <div style="flex:1;">
-                <b style="font-size:14px;">Business AI Mind</b><br>
-                <small id="coach-msg" style="color:gray;">Calculating your goals...</small>
-                <div id="ai-urgent-amt" style="font-size:18px; font-weight:900; margin-top:3px;"></div>
+                <b style="font-size:14px; color:#1E293B;" id="coach-title">Business Intelligence</b><br>
+                <small style="color:#64748B; font-weight:500;" id="coach-msg">Analyzing your daily performance...</small>
+            </div>
+            <div style="text-align:right;">
+                <small style="font-size:10px; font-weight:800; color:#94A3B8;">TARGET</small>
+                <div id="ai-target-val" style="font-size:22px; font-weight:900;">₹0</div>
             </div>
         </div>
 
-        <div style="background:white; border-radius:24px; padding:12px; margin:15px 0;"><canvas id="profitChart" height="140"></canvas></div>
-        <div id="tx-history-list"></div>
-    </div>
-
-    <div id="qrOverlay">
-        <div class="back-btn" onclick="window.closeQr()"><span class="material-symbols-rounded">arrow_back_ios</span> WAPAS</div>
-        <h2 style="margin-top:50px;">Scan to Pay</h2>
-        <p style="color:gray;">Customer को स्कैन करने को कहें</p>
-        <div id="fullQrCode"></div>
-        <button class="btn-action" style="max-width:300px;" onclick="window.saveData()">DONE & SAVE HISTORY</button>
-    </div>
-
-    <div class="nav">
-        <div onclick="window.openSettings()"><span class="material-symbols-rounded" style="font-size:30px; color:gray;">settings</span></div>
-        <div class="fab" onclick="window.openEntry()">+</div>
-        <div onclick="window.openAnalysis()"><span class="material-symbols-rounded" style="font-size:30px; color:var(--ai-purple);">insights</span></div>
-    </div>
-
-    <div id="entrySheet" class="overlay">
-        <div class="sheet">
-            <h3 id="entryTitle">New Entry</h3>
-            <select id="typeIn" onchange="window.updateCats()">
-                <option value="earning">💰 Sawari Income (Scanner)</option>
-                <option value="expense">💸 Kharcha / Expense</option>
-            </select>
-            <input type="number" id="amtIn" placeholder="Enter Amount ₹" inputmode="decimal">
-            <select id="catIn" onchange="window.checkOtherCat()"></select>
-            <input type="text" id="manualCat" placeholder="Kharcha kis liye? (Example: Chai, Tyre)" style="display:none;">
-            <button class="btn-action" id="actionBtn" onclick="window.handleAction()">SHOW SCANNER</button>
-            <p onclick="window.closeSheets()" style="text-align:center; margin-top:20px; color:gray; cursor:pointer;">Cancel</p>
+        <div style="background:white; border-radius:28px; padding:20px; border:1px solid #E2E8F0; margin-bottom:20px;">
+            <canvas id="profitChart" height="150"></canvas>
         </div>
+
+        <h4 style="margin-bottom:15px; padding-left:5px; color:#64748B;">Today's Trips</h4>
+        <div id="main-tx-list"></div>
     </div>
 
-    <div id="settingsSheet" class="overlay">
-        <div class="sheet">
-            <h3>Settings & Loans</h3>
-            <label>Your UPI ID (Scanner के लिए)</label>
-            <input type="text" id="upiIdIn" placeholder="example@okaxis">
-            <label>Daily Target (₹)</label>
-            <input type="number" id="dailyGoalIn">
-            <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <b>Monthly EMI List</b>
-                <button onclick="window.addNewEmi()" style="border:none; color:var(--ai-purple); background:none; font-weight:bold;">+ ADD NEW</button>
-            </div>
-            <div id="emi-inputs"></div>
-            <button class="btn-action" style="background:var(--success); margin-top:15px;" onclick="window.saveSettings()">SAVE ALL SETTINGS</button>
-        </div>
+    <div class="bottom-nav">
+        <button class="nav-btn" onclick="window.openSheet('settingsSheet')">
+            <span class="material-symbols-rounded">settings</span>
+            <span class="nav-label">Settings</span>
+        </button>
+        <button class="nav-btn" onclick="window.openSheet('calendarSheet')">
+            <span class="material-symbols-rounded">calendar_today</span>
+            <span class="nav-label">History</span>
+        </button>
+        <button class="fab" onclick="window.openSheet('entrySheet')">
+            <span class="material-symbols-rounded">add</span>
+        </button>
+        <button class="nav-btn" onclick="window.openSheet('analysisSheet')">
+            <span class="material-symbols-rounded">monitoring</span>
+            <span class="nav-label">Analysis</span>
+        </button>
+        <button class="nav-btn" onclick="window.downloadFullReport()">
+            <span class="material-symbols-rounded">description</span>
+            <span class="nav-label">Report</span>
+        </button>
     </div>
 
-    <div id="analysisSheet" class="overlay">
-        <div class="sheet">
-            <h3>Accurate Business Report</h3>
-            <div class="stat-grid" id="analysisContent"></div>
-            <div style="margin-top:15px; padding:15px; background:#EEF2FF; border-radius:15px;">
-                <b style="color:var(--ai-purple);">AI Advice:</b>
-                <p id="ai-advice" style="font-size:13px; color:#444; margin-top:5px;"></p>
-            </div>
-            <button class="btn-action" style="background:gray; margin-top:15px;" onclick="window.closeSheets()">CLOSE</button>
-        </div>
+    <div id="qrView">
+        <h2 style="font-weight:800; color:var(--primary);">Scan to Pay</h2>
+        <p style="color:#64748B; margin:10px 0 30px;">भुगतान के लिए ग्राहक को स्कैन करने को कहें</p>
+        <div id="fullQrCode" style="padding:20px; background:white; border-radius:30px; box-shadow:0 20px 50px rgba(0,0,0,0.1);"></div>
+        <button class="primary-btn" style="max-width:260px; margin-top:50px;" onclick="window.saveData()">I HAVE RECEIVED PAYMENT</button>
     </div>
+
+    <div id="entrySheet" class="sheet-overlay"><div class="bottom-sheet">
+        <div class="sheet-header"><h3>New Entry</h3><div class="close-btn" onclick="window.closeSheets()"><span class="material-symbols-rounded">close</span></div></div>
+        <select id="typeIn" onchange="window.updateCats()">
+            <option value="earning">💰 Income (Generate QR)</option>
+            <option value="expense">💸 Expense (Kharcha)</option>
+        </select>
+        <input type="number" id="amtIn" placeholder="Amount ₹" inputmode="decimal">
+        <select id="catIn"></select>
+        <button class="primary-btn" onclick="window.handleAction()">NEXT STEP</button>
+    </div></div>
+
+    <div id="settingsSheet" class="sheet-overlay"><div class="bottom-sheet">
+        <div class="sheet-header"><h3>Business Settings</h3><div class="close-btn" onclick="window.closeSheets()"><span class="material-symbols-rounded">close</span></div></div>
+        <input type="text" id="upiIdIn" placeholder="UPI ID (example@okaxis)">
+        <input type="number" id="dailyGoalIn" placeholder="Daily Profit Target ₹">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+            <b style="color:var(--primary);">EMI / Loan List</b>
+            <button onclick="window.addNewEmi()" style="border:none; color:var(--accent); background:none; font-weight:800;">+ ADD NEW</button>
+        </div>
+        <div id="emi-container" style="margin-top:15px;"></div>
+        <button class="primary-btn" style="background:var(--success); margin-top:20px;" onclick="window.saveSettings()">SAVE & SYNC CLOUD</button>
+    </div></div>
+
+    <div id="calendarSheet" class="sheet-overlay"><div class="bottom-sheet">
+        <div class="sheet-header"><h3>Daily History</h3><div class="close-btn" onclick="window.closeSheets()"><span class="material-symbols-rounded">close</span></div></div>
+        <input type="date" id="historyDate" onchange="window.loadHistoryByDate()">
+        <div id="date-stats" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0;"></div>
+        <div id="history-tx-list" style="max-height:300px; overflow-y:auto;"></div>
+    </div></div>
+
+    <div id="analysisSheet" class="sheet-overlay"><div class="bottom-sheet">
+        <div class="sheet-header"><h3>Performance Analysis</h3><div class="close-btn" onclick="window.closeSheets()"><span class="material-symbols-rounded">close</span></div></div>
+        <div id="analysis-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+        <button class="primary-btn" style="background:#64748B; margin-top:25px;" onclick="window.closeSheets()">BACK TO HOME</button>
+    </div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCq6ZTCMeAGhqKH7cZ3d8gn1JSjn7MFkHg", authDomain: "finance-pro-a58ef.firebaseapp.com", projectId: "finance-pro-a58ef", storageBucket: "finance-pro-a58ef.firebasestorage.app", messagingSenderId: "441176545235", appId: "1:441176545235:web:5aa38eaf789b6e5ce1c126" };
         const app = initializeApp(firebaseConfig);
@@ -149,153 +192,205 @@
         let transactions = [];
         let chart = null;
 
+        // Real-Time Date Handling
+        const getLocalDate = () => {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            return new Date(now - offset).toISOString().split('T')[0];
+        };
+
+        const updateLiveBadge = () => {
+            const options = { day: 'numeric', month: 'short' };
+            const str = new Date().toLocaleDateString('hi-IN', options).toUpperCase();
+            document.getElementById('date-label').innerText = `● LIVE: ${str}`;
+        };
+        updateLiveBadge();
+
+        // Firebase Sync
         onSnapshot(query(collection(db, "transactions"), orderBy("timestamp", "desc")), (snap) => {
             transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             render();
         });
 
-        window.openEntry = () => { document.getElementById('entrySheet').style.display = 'flex'; window.updateCats(); };
-        window.closeSheets = () => document.querySelectorAll('.overlay').forEach(s => s.style.display = 'none');
+        onSnapshot(doc(db, "app_settings", "suraj_master_ai_pro"), (docSnap) => {
+            if (docSnap.exists()) {
+                const d = docSnap.data();
+                localStorage.setItem('userUpi', d.upiId || '');
+                localStorage.setItem('dailyGoal', d.dailyGoal || '');
+                localStorage.setItem('emis', JSON.stringify(d.emis || []));
+                render();
+            }
+        });
+
+        // UI Handlers
+        window.openSheet = (id) => { 
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'settingsSheet') {
+                document.getElementById('upiIdIn').value = localStorage.getItem('userUpi') || '';
+                document.getElementById('dailyGoalIn').value = localStorage.getItem('dailyGoal') || '';
+                const cont = document.getElementById('emi-container'); cont.innerHTML = '';
+                JSON.parse(localStorage.getItem('emis') || '[]').forEach(e => window.addNewEmi(e.name, e.amount));
+            }
+            if(id === 'calendarSheet') {
+                document.getElementById('historyDate').value = getLocalDate();
+                window.loadHistoryByDate();
+            }
+            if(id === 'analysisSheet') window.loadAnalysis();
+        };
+
+        window.closeSheets = () => document.querySelectorAll('.sheet-overlay').forEach(s => s.style.display = 'none');
         
         window.updateCats = () => {
             const t = document.getElementById('typeIn').value;
-            const btn = document.getElementById('actionBtn');
-            const catIn = document.getElementById('catIn');
-            document.getElementById('manualCat').style.display = 'none';
-            
-            if(t === 'earning') {
-                btn.innerText = 'SHOW SCANNER';
-                catIn.innerHTML = `<option value="🛺 Sawari">Sawari</option><option value="💰 Tip">Tip</option>`;
-            } else {
-                btn.innerText = 'SAVE EXPENSE';
-                catIn.innerHTML = `<option value="⛽ Fuel">Fuel</option><option value="🍲 Food">Food</option><option value="🛠️ Repair">Repair</option><option value="Other">Other (Manual)</option>`;
-            }
-        };
-
-        window.checkOtherCat = () => {
-            const val = document.getElementById('catIn').value;
-            document.getElementById('manualCat').style.display = (val === 'Other') ? 'block' : 'none';
+            document.getElementById('catIn').innerHTML = t === 'earning' ? `<option value="🛺 Sawari">Sawari</option><option value="💰 Tip">Tip</option>` : `<option value="⛽ Fuel">Fuel</option><option value="🍲 Food">Food</option><option value="🛠️ Repair">Repair</option><option value="Other">Other</option>`;
         };
 
         window.handleAction = () => {
-            const t = document.getElementById('typeIn').value;
             const amt = document.getElementById('amtIn').value;
             if(!amt) return;
-            if(t === 'earning') {
+            if(document.getElementById('typeIn').value === 'earning') {
                 const upi = localStorage.getItem('userUpi');
-                if(!upi) return alert("Settings में UPI ID डालें!");
-                document.getElementById('qrOverlay').style.display = 'flex';
+                if(!upi) return alert("Please set UPI in Settings");
+                document.getElementById('qrView').style.display = 'flex';
                 const qrDiv = document.getElementById('fullQrCode');
                 qrDiv.innerHTML = "";
-                new QRCode(qrDiv, { text: `upi://pay?pa=${upi}&pn=Suraj&am=${amt}&cu=INR`, width: 240, height: 240 });
+                new QRCode(qrDiv, { text: `upi://pay?pa=${upi}&pn=Suraj&am=${amt}&cu=INR`, width: 220, height: 220 });
             } else { window.saveData(); }
         };
 
         window.saveData = async () => {
             const a = parseFloat(document.getElementById('amtIn').value);
-            let category = document.getElementById('catIn').value;
-            if(category === 'Other') category = "📁 " + document.getElementById('manualCat').value;
-            
-            await addDoc(collection(db, "transactions"), { amount: a, type: document.getElementById('typeIn').value, category: category, timestamp: new Date().toISOString() });
-            window.closeQr(); window.closeSheets();
-        };
-
-        window.deleteTx = async (id) => { if(confirm("क्या आप इस रिकॉर्ड को हटाना चाहते हैं?")) await deleteDoc(doc(db, "transactions", id)); };
-        window.closeQr = () => document.getElementById('qrOverlay').style.display = 'none';
-
-        window.openAnalysis = () => {
-            const inc = transactions.filter(t => t.type === 'earning').reduce((s, e) => s + e.amount, 0);
-            const exp = transactions.filter(t => t.type === 'expense').reduce((s, e) => s + e.amount, 0);
-            const fuel = transactions.filter(t => t.category === '⛽ Fuel').reduce((s, e) => s + e.amount, 0);
-            document.getElementById('analysisContent').innerHTML = `
-                <div class="stat-box"><small>कुल कमाई</small><br><b>₹${inc}</b></div>
-                <div class="stat-box" style="border-color:red;"><small>कुल खर्चा</small><br><b>₹${exp}</b></div>
-                <div class="stat-box" style="border-color:orange;"><small>ईंधन खर्च</small><br><b>₹${fuel}</b></div>
-                <div class="stat-box" style="border-color:green;"><small>नेट बचत</small><br><b>₹${inc - exp}</b></div>
-            `;
-            document.getElementById('ai-advice').innerText = fuel > (inc * 0.3) ? "तेल का खर्चा ज्यादा है, रूट बदलें या सर्विसिंग चेक करें!" : "आपका बिजनेस सही चल रहा है!";
-            document.getElementById('analysisSheet').style.display = 'flex';
-        };
-
-        window.openSettings = () => {
-            document.getElementById('settingsSheet').style.display = 'flex';
-            document.getElementById('upiIdIn').value = localStorage.getItem('userUpi') || '';
-            document.getElementById('dailyGoalIn').value = localStorage.getItem('dailyGoal') || '';
-            const cont = document.getElementById('emi-inputs'); cont.innerHTML = '';
-            JSON.parse(localStorage.getItem('emis') || '[]').forEach(e => window.addNewEmi(e.name, e.amount));
-        };
-
-        window.addNewEmi = (n='', a='') => {
-            const div = document.createElement('div'); div.style.display = 'flex'; div.style.gap = '5px'; div.style.marginBottom = '5px';
-            div.innerHTML = `<input type="text" placeholder="Loan Name" value="${n}" style="flex:2; margin:0;"><input type="number" placeholder="₹" value="${a}" style="flex:1; margin:0;"><button onclick="this.parentElement.remove()" style="border:none; color:red; background:none; font-weight:bold; font-size:20px;">×</button>`;
-            document.getElementById('emi-inputs').appendChild(div);
-        };
-
-        window.saveSettings = () => {
-            localStorage.setItem('userUpi', document.getElementById('upiIdIn').value);
-            localStorage.setItem('dailyGoal', document.getElementById('dailyGoalIn').value);
-            const emis = []; document.getElementById('emi-inputs').querySelectorAll('div').forEach(r => {
-                const inp = r.querySelectorAll('input'); if(inp[0].value) emis.push({ name: inp[0].value, amount: parseFloat(inp[1].value) || 0 });
+            const localTimestamp = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).replace(" ", "T");
+            await addDoc(collection(db, "transactions"), { 
+                amount: a, type: document.getElementById('typeIn').value, 
+                category: document.getElementById('catIn').value, timestamp: localTimestamp 
             });
-            localStorage.setItem('emis', JSON.stringify(emis)); window.closeSheets(); render();
+            document.getElementById('qrView').style.display = 'none'; window.closeSheets();
         };
 
+        window.deleteTx = async (id) => { if(confirm("Remove this entry?")) await deleteDoc(doc(db, "transactions", id)); };
+
+        // Central Render Engine
         function render() {
-            const today = new Date().toDateString();
+            const todayStr = getLocalDate();
             const goal = parseFloat(localStorage.getItem('dailyGoal')) || 0;
             const emis = JSON.parse(localStorage.getItem('emis') || '[]');
-            let tInc = 0, tExp = 0, dailyEmi = 0;
             
-            const emiSum = document.getElementById('emi-summary'); emiSum.innerHTML = '';
-            emis.forEach(e => { dailyEmi += (e.amount/30); emiSum.innerHTML += `<div class="emi-box">${e.name} <b>₹${(e.amount/30).toFixed(0)}</b></div>`; });
+            let tInc = 0, tExp = 0, dailyEmiNeeded = 0;
 
-            const list = document.getElementById('tx-history-list'); list.innerHTML = '';
-            transactions.forEach(t => {
-                const dt = new Date(t.timestamp);
-                if(dt.toDateString() === today) {
-                    if(t.type === 'earning') tInc += t.amount; else tExp += t.amount;
-                    list.innerHTML += `<div class="tx-item">
-                        <div><b>${t.category}</b><br><small>${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></div>
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <b style="color:${t.type==='earning'?'var(--success)':'var(--danger)'}">₹${t.amount}</b>
-                            <span class="material-symbols-rounded del-icon" onclick="deleteTx('${t.id}')">delete</span>
-                        </div>
-                    </div>`;
-                }
+            const emiQuick = document.getElementById('emi-quick-list'); 
+            emiQuick.innerHTML = '';
+            emis.forEach(e => { 
+                const dAmt = (e.amount/30);
+                dailyEmiNeeded += dAmt; 
+                emiQuick.innerHTML += `<span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:8px; font-size:10px; font-weight:800;">${e.name}: ₹${dAmt.toFixed(0)}</span>`;
+            });
+            document.getElementById('emi-tag').innerText = `Daily EMI: ₹${dailyEmiNeeded.toFixed(0)}`;
+
+            const list = document.getElementById('main-tx-list'); list.innerHTML = '';
+            transactions.filter(t => t.timestamp.startsWith(todayStr)).forEach(t => {
+                if(t.type === 'earning') tInc += t.amount; else tExp += t.amount;
+                list.innerHTML += `<div class="tx-card">
+                    <div class="tx-info"><b>${t.category}</b><br><small>${t.timestamp.split('T')[1].substring(0,5)}</small></div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span class="tx-amt" style="color:${t.type==='earning'?'var(--success)':'var(--danger)'}">₹${t.amount.toFixed(2)}</span>
+                        <span class="material-symbols-rounded" style="color:#CBD5E1; cursor:pointer;" onclick="deleteTx('${t.id}')">delete</span>
+                    </div>
+                </div>`;
             });
 
-            document.getElementById('net-display').innerText = "₹" + (tInc - tExp);
-            document.getElementById('target-info').innerText = "Target: ₹" + goal;
+            const netProfit = tInc - tExp;
+            document.getElementById('net-display').innerText = `₹${netProfit.toFixed(2)}`;
+
+            const targetVal = document.getElementById('ai-target-val');
             const fill = document.getElementById('health-fill');
-            const prog = (tInc / goal) * 100;
-            fill.style.width = Math.min(prog, 100) + "%";
-            
-            if(tInc < dailyEmi) { 
-                fill.style.backgroundColor = 'var(--danger)'; 
-                document.getElementById('coach-msg').innerText = "EMI पूरा करने के लिए मेहनत करें!";
-                document.getElementById('ai-urgent-amt').innerHTML = `<span style="color:var(--danger)">₹${(dailyEmi - tInc).toFixed(0)} For EMI</span>`; 
-            } else { 
-                fill.style.backgroundColor = prog >= 100 ? 'var(--success)' : 'var(--warning)'; 
-                document.getElementById('coach-msg').innerText = prog >= 100 ? "आज का काम शानदार रहा!" : "EMI सेफ है, अब प्रॉफिट कमाएं!";
-                document.getElementById('ai-urgent-amt').innerHTML = `<span style="color:var(--success)">Goal: ₹${Math.max(0, goal-tInc)}</span>`; 
+            const coachMsg = document.getElementById('coach-msg');
+            const coachTitle = document.getElementById('coach-title');
+
+            if (tInc < dailyEmiNeeded) {
+                const diff = dailyEmiNeeded - tInc;
+                coachTitle.innerText = "CRITICAL: EMI PENDING"; coachTitle.style.color = "var(--danger)";
+                coachMsg.innerText = `You need ₹${diff.toFixed(0)} more to cover today's EMI.`;
+                targetVal.innerText = `₹${diff.toFixed(0)}`; targetVal.style.color = "var(--danger)";
+                fill.style.width = `${Math.min((tInc / dailyEmiNeeded) * 100, 100)}%`; fill.style.backgroundColor = "var(--danger)";
+            } else if (tInc < goal) {
+                const diff = goal - tInc;
+                coachTitle.innerText = "EMI SAFE - PROFIT MODE"; coachTitle.style.color = "var(--warning)";
+                coachMsg.innerText = `EMI is covered! Now earning for your ₹${goal} profit goal.`;
+                targetVal.innerText = `₹${diff.toFixed(0)}`; targetVal.style.color = "var(--warning)";
+                fill.style.width = `${Math.min((tInc / goal) * 100, 100)}%`; fill.style.backgroundColor = "var(--warning)";
+            } else {
+                coachTitle.innerText = "MISSION ACCOMPLISHED"; coachTitle.style.color = "var(--success)";
+                coachMsg.innerText = "Target met! Every trip from now is your bonus profit.";
+                targetVal.innerText = `+₹${(tInc-goal).toFixed(0)}`; targetVal.style.color = "var(--success)";
+                fill.style.width = "100%"; fill.style.backgroundColor = "var(--success)";
             }
             updateChart();
         }
 
         function updateChart() {
-            const ctx = document.getElementById('profitChart');
-            const labels = []; const data = [];
+            const ctx = document.getElementById('profitChart').getContext('2d');
+            const data = []; const labels = []; const colors = [];
             for(let i=6; i>=0; i--) {
-                const d = new Date(); d.setDate(d.getDate()-i); labels.push(d.toLocaleDateString('hi-IN', {weekday:'short'}));
-                let n = 0; transactions.forEach(t => { if(new Date(t.timestamp).toDateString() === d.toDateString()) n += (t.type==='earning'?t.amount:-t.amount); });
-                data.push(n);
+                const d = new Date(); d.setDate(d.getDate()-i); const ds = d.toISOString().split('T')[0];
+                labels.push(d.toLocaleDateString('hi-IN', {weekday:'short'}));
+                let n = 0; transactions.filter(t => t.timestamp.startsWith(ds)).forEach(t => n += (t.type==='earning'?t.amount:-t.amount));
+                data.push(n); colors.push(n >= 0 ? '#10B981' : '#EF4444');
             }
             if(chart) chart.destroy();
-            chart = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ data, borderColor:'#6366F1', tension:0.4, fill:true, backgroundColor:'rgba(99,102,241,0.1)' }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ display:false }, x:{ grid:{ display:false } } } } });
+            chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor:colors, borderRadius:8, barThickness: 12 }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ display:false }, x:{ grid:{ display:false }, ticks:{ font:{ weight:'600' } } } } } });
         }
 
-        window.downloadPDF = () => { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Suraj Business Report", 10, 10); transactions.forEach((t, i) => doc.text(`${t.timestamp.split('T')[0]} - ${t.category}: Rs.${t.amount}`, 10, 20 + (i*10))); doc.save("Report.pdf"); };
-        window.saveCurrentLocation = () => alert("Hotspot saved! Next time AI will notify you here.");
+        window.saveSettings = async () => {
+            const emis = [];
+            document.getElementById('emi-container').querySelectorAll('.emi-item').forEach(row => {
+                const inp = row.querySelectorAll('input');
+                if(inp[0].value) emis.push({ name: inp[0].value, amount: parseFloat(inp[1].value) || 0 });
+            });
+            await setDoc(doc(db, "app_settings", "suraj_master_ai_pro"), {
+                upiId: document.getElementById('upiIdIn').value,
+                dailyGoal: document.getElementById('dailyGoalIn').value,
+                emis: emis
+            });
+            window.closeSheets();
+        };
+
+        window.addNewEmi = (n='', a='') => {
+            const div = document.createElement('div'); div.className = 'emi-item';
+            div.style.cssText = "display:flex; gap:10px; margin-bottom:10px;";
+            div.innerHTML = `<input type="text" placeholder="Loan Name" value="${n}" style="flex:2; margin:0;"><input type="number" placeholder="₹" value="${a}" style="flex:1; margin:0;"><span class="material-symbols-rounded" style="color:var(--danger); cursor:pointer; align-self:center;" onclick="this.parentElement.remove()">delete</span>`;
+            document.getElementById('emi-container').appendChild(div);
+        };
+
+        window.loadHistoryByDate = () => {
+            const sel = document.getElementById('historyDate').value;
+            let inc = 0, exp = 0, html = "";
+            transactions.filter(t => t.timestamp.startsWith(sel)).forEach(t => {
+                if(t.type === 'earning') inc += t.amount; else exp += t.amount;
+                html += `<div class="tx-card"><div><b>${t.category}</b></div><b style="color:${t.type==='earning'?'var(--success)':'var(--danger)'}">₹${t.amount.toFixed(2)}</b></div>`;
+            });
+            document.getElementById('date-stats').innerHTML = `<div style="background:#ECFDF5; padding:15px; border-radius:18px; text-align:center;"><small>Income</small><br><b style="color:var(--success)">₹${inc.toFixed(0)}</b></div><div style="background:#FFF1F2; padding:15px; border-radius:18px; text-align:center;"><small>Net</small><br><b style="color:var(--danger)">₹${(inc-exp).toFixed(0)}</b></div>`;
+            document.getElementById('history-tx-list').innerHTML = html || "<p style='text-align:center; color:#94A3B8; margin-top:20px;'>No trips recorded.</p>";
+        };
+
+        window.loadAnalysis = () => {
+            const inc = transactions.filter(t => t.type === 'earning').reduce((s, e) => s + e.amount, 0);
+            const exp = transactions.filter(t => t.type === 'expense').reduce((s, e) => s + e.amount, 0);
+            document.getElementById('analysis-grid').innerHTML = `
+                <div style="background:#F1F5F9; padding:20px; border-radius:24px;">Earnings<br><b>₹${inc.toFixed(0)}</b></div>
+                <div style="background:#F1F5F9; padding:20px; border-radius:24px;">Spent<br><b>₹${exp.toFixed(0)}</b></div>
+                <div style="background:#E0E7FF; padding:20px; border-radius:24px;">Savings<br><b>₹${(inc-exp).toFixed(0)}</b></div>
+                <div style="background:#E0E7FF; padding:20px; border-radius:24px;">Total Trips<br><b>${transactions.filter(t=>t.type==='earning').length}</b></div>`;
+        };
+        
+        window.downloadFullReport = () => {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(22); doc.text("Suraj Business Master - Full Report", 20, 20);
+            doc.setFontSize(12); transactions.slice(0, 30).forEach((t, i) => {
+                doc.text(`${t.timestamp.replace('T', ' ')}: ${t.category} - Rs.${t.amount}`, 20, 40 + (i*10));
+            });
+            doc.save("Business_Full_Report.pdf");
+        };
     </script>
 </body>
 </html>
