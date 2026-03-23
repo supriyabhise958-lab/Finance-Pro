@@ -3,188 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Suraj Pro Master - Cloud SaaS</title>
+    <title>Suraj Pro Master - Final Elite</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     <style>
-        :root { --primary: #800000; --secondary: #FAF5F0; --white: #FFFFFF; --text: #2C1A1A; --light: #8D7A7A; --success: #2E7D32; }
+        :root { --primary: #800000; --secondary: #FAF5F0; --white: #FFFFFF; --text: #2C1A1A; --light: #8D7A7A; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--secondary); color: var(--text); height: 100vh; width: 100vw; overflow: hidden; position: fixed; }
 
-        /* Premium Auth Screen */
+        /* Auth Premium View */
         #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2C1A1A 0%, #800000 100%); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
         .auth-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 40px 30px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 360px; text-align: center; color: white; }
-        .auth-logo { width: 80px; height: 80px; background: white; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
-        /* Modern Toolbar */
+        /* App Toolbar */
         .app-bar { height: 80px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid rgba(128,0,0,0.08); }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary); padding: 2px; }
-        .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid rgba(128,0,0,0.1); background: var(--secondary); color: var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .tool-group { display: flex; gap: 8px; }
+        .btn-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--secondary); color: var(--primary); border: 1px solid rgba(128,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* Dashboard Structure */
-        .main-container { height: calc(100vh - 165px); overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        /* Dashboard Content */
+        .main-view { height: calc(100vh - 165px); overflow-y: auto; padding: 20px; padding-bottom: 120px; }
         .premium-card { background: linear-gradient(135deg, var(--primary) 0%, #4D0000 100%); color: var(--white); border-radius: 28px; padding: 25px; box-shadow: 0 15px 35px rgba(128,0,0,0.25); margin-bottom: 20px; }
         
-        /* Stats Grid */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--white); padding: 15px; border-radius: 20px; border: 1px solid rgba(128,0,0,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-box { background: var(--white); padding: 15px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid rgba(128,0,0,0.05); }
 
-        /* History & KM */
-        .tx-card { background: var(--white); padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .km-tag { font-size: 10px; background: var(--secondary); color: var(--primary); padding: 3px 8px; border-radius: 8px; font-weight: 800; display: inline-block; margin-top: 5px; }
+        .trip-item { background: var(--white); padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .km-badge { font-size: 10px; background: var(--secondary); color: var(--primary); padding: 3px 8px; border-radius: 8px; font-weight: 800; }
 
-        /* Full Pages & Overlays */
-        .sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: flex-end; backdrop-filter: blur(5px); }
-        .bottom-sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; }
-        .full-page { display: none; position: fixed; inset: 0; background: var(--white); z-index: 5000; flex-direction: column; padding: 25px; }
-        
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
-        .calc-btn { padding: 18px; border-radius: 18px; border: none; background: var(--secondary); font-size: 18px; font-weight: 700; color: var(--primary); }
-        
-        /* Navigation */
+        /* Overlays & Sheets */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: flex-end; backdrop-filter: blur(8px); }
+        .sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+        /* Full Screen Modals */
+        .modal { display: none; position: fixed; inset: 0; background: var(--white); z-index: 5000; flex-direction: column; padding: 25px; }
+        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
+        .key { padding: 20px; border-radius: 18px; border: none; background: var(--secondary); font-size: 20px; font-weight: 700; color: var(--primary); }
+
+        /* Bottom Navigation */
         .bottom-nav { height: 85px; background: var(--white); position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #BBB0B0; border: none; background: none; font-size: 10px; font-weight: 700; }
-        .fab { width: 65px; height: 65px; background: var(--primary); color: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; transform: translateY(-30px); border: 6px solid var(--secondary); box-shadow: 0 10px 20px rgba(128,0,0,0.3); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #BBB0B0; border: none; background: none; font-size: 10px; font-weight: 800; }
+        .nav-item.active { color: var(--primary); }
+        .action-fab { width: 65px; height: 65px; background: var(--primary); color: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; transform: translateY(-30px); border: 6px solid var(--secondary); box-shadow: 0 10px 20px rgba(128,0,0,0.3); }
 
-        input, select { width: 100%; padding: 18px; margin: 10px 0; border-radius: 18px; background: var(--secondary); border: none; font-size: 16px; font-weight: 600; }
-        .primary-btn { width: 100%; padding: 18px; border: none; border-radius: 20px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; }
+        input, select { width: 100%; padding: 18px; margin: 10px 0; border-radius: 18px; background: var(--secondary); border: none; font-size: 16px; font-weight: 600; outline: none; }
+        .btn-primary { width: 100%; padding: 18px; border: none; border-radius: 20px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-glass">
-            <div class="auth-logo">🛺</div>
-            <h1 style="font-family:'Marcellus',serif; font-size:28px; margin-bottom:10px;">PRO MASTER</h1>
-            <p style="opacity:0.7; font-size:14px; margin-bottom:35px;">Professional Rickshaw SaaS Cloud</p>
-            <button class="primary-btn" id="login-btn" style="background:white; color:var(--primary);">
-                <img src="https://www.google.com/favicon.ico" width="18" style="vertical-align:middle; margin-right:10px;"> SIGN IN WITH GOOGLE
+            <div style="width:70px; height:70px; background:white; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:35px; margin:0 auto 20px;">🛺</div>
+            <h1 style="font-family:'Marcellus',serif; font-size:26px;">SURAJ PRO CLOUD</h1>
+            <p style="opacity:0.7; font-size:13px; margin-bottom:30px;">Professional Business Management</p>
+            <button class="btn-primary" style="background:white; color:var(--primary);" id="google-login">
+                <img src="https://www.google.com/favicon.ico" width="18" style="vertical-align:middle; margin-right:10px;"> LOGIN WITH GOOGLE
             </button>
         </div>
     </div>
 
-    <div id="app-content" style="display:none;">
+    <div id="app-shell" style="display:none;">
         <div class="app-bar">
-            <div class="user-info">
-                <img id="user-pic" class="avatar" src="">
-                <div><b id="user-name" style="font-size:15px;">Suraj Pro</b><br><small id="user-email" style="font-size:9px; color:var(--light); font-weight:800;"></small></div>
+            <div class="user-profile">
+                <img id="u-img" src="">
+                <div><b id="u-name" style="font-size:14px;">Suraj</b><br><small id="u-email" style="font-size:9px; color:var(--light); font-weight:800;"></small></div>
             </div>
-            <div style="display:flex; gap:10px;">
-                <button class="icon-btn" onclick="openPage('meter-page')"><span class="material-symbols-rounded">speed</span></button>
-                <button class="icon-btn" onclick="openPage('calc-page')"><span class="material-symbols-rounded">calculate</span></button>
+            <div class="tool-group">
+                <button class="btn-icon" onclick="openModal('meter-modal')"><span class="material-symbols-rounded">speed</span></button>
+                <button class="btn-icon" onclick="openModal('calc-modal')"><span class="material-symbols-rounded">calculate</span></button>
             </div>
         </div>
 
-        <div class="main-container">
+        <div class="main-view">
             <div class="premium-card">
-                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; opacity:0.8; letter-spacing:1px;">
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; opacity:0.8;">
                     <span>DAILY TARGET TRACKER</span>
-                    <span id="pending-label">PENDING: ₹0</span>
+                    <span id="pending-val">PENDING: ₹0</span>
                 </div>
-                <div id="net-display" style="font-size:48px; font-weight:800; margin:8px 0;">₹0</div>
-                <div style="height:12px; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
-                    <div id="health-fill" style="height:100%; width:0%; border-radius:10px; background:white; transition:1.2s cubic-bezier(0.1, 0.7, 0.1, 1);"></div>
-                </div>
+                <div id="dash-total" style="font-size:45px; font-weight:800; margin:10px 0;">₹0</div>
+                <div style="height:10px; background:rgba(0,0,0,0.2); border-radius:10px;"><div id="progress-bar" style="height:100%; width:0%; background:white; border-radius:10px; transition:1s;"></div></div>
             </div>
 
-            <div class="stats-row">
-                <div class="stat-card">
-                    <small style="color:var(--light); font-weight:800;">EMI COLLECTED</small>
-                    <h3 id="emi-collect" style="color:var(--primary); font-size:20px; margin-top:5px;">₹0</h3>
-                </div>
-                <div class="stat-card">
-                    <small style="color:var(--light); font-weight:800;">NET PROFIT</small>
-                    <h3 id="profit-collect" style="color:var(--success); font-size:20px; margin-top:5px;">₹0</h3>
-                </div>
+            <div class="stats-grid">
+                <div class="stat-box"><small style="color:var(--light); font-weight:800;">EMI PART</small><h3 id="dash-emi" style="color:var(--primary);">₹0</h3></div>
+                <div class="stat-box"><small style="color:var(--light); font-weight:800;">NET PROFIT</small><h3 id="dash-profit" style="color:green;">₹0</h3></div>
             </div>
 
-            <button class="primary-btn" style="background:var(--white); color:var(--primary); font-size:12px; padding:10px; margin-bottom:20px;" onclick="toggleGraph()">VIEW PERFORMANCE CHART</button>
-            <div id="chart-cont" style="display:none; background:white; padding:15px; border-radius:24px; margin-bottom:20px;"><canvas id="profitChart"></canvas></div>
+            <button class="btn-primary" style="background:white; color:var(--primary); font-size:12px; margin-bottom:20px; padding:12px;" onclick="toggleChart()">VIEW PERFORMANCE GRAPH</button>
+            <div id="chart-cont" style="display:none; background:white; padding:15px; border-radius:24px; margin-bottom:20px;"><canvas id="mainChart"></canvas></div>
 
-            <h3 style="font-size:12px; font-weight:800; color:var(--light); margin-bottom:15px; letter-spacing:1px;">TODAY'S ACTIVITY</h3>
-            <div id="main-tx-list"></div>
+            <h3 style="font-size:12px; font-weight:800; color:var(--light); margin-bottom:15px; letter-spacing:1px;">TODAY'S TRIPS</h3>
+            <div id="today-list"></div>
         </div>
 
         <div class="bottom-nav">
-            <button class="nav-btn" onclick="openSheet('settingsSheet')"><span class="material-symbols-rounded">tune</span>CONFIG</button>
-            <button class="nav-btn" onclick="openSheet('historySheet')"><span class="material-symbols-rounded">history</span>HISTORY</button>
-            <button class="fab" onclick="openSheet('entrySheet')"><span class="material-symbols-rounded" style="font-size:35px;">add</span></button>
-            <button class="nav-btn" onclick="openSheet('analysisSheet')"><span class="material-symbols-rounded">query_stats</span>ANALYTICS</button>
-            <button class="nav-btn" onclick="openSheet('profileSheet')"><span class="material-symbols-rounded">person</span>PROFILE</button>
+            <button class="nav-item" onclick="openSheet('sheet-config')"><span class="material-symbols-rounded">tune</span>CONFIG</button>
+            <button class="nav-item" onclick="openSheet('sheet-history')"><span class="material-symbols-rounded">history</span>HISTORY</button>
+            <div class="action-fab" onclick="openSheet('sheet-entry')"><span class="material-symbols-rounded" style="font-size:35px;">add</span></div>
+            <button class="nav-item" onclick="openSheet('sheet-analysis')"><span class="material-symbols-rounded">query_stats</span>ANALYTICS</button>
+            <button class="nav-item" onclick="openSheet('sheet-profile')"><span class="material-symbols-rounded">person</span>PROFILE</button>
         </div>
     </div>
 
-    <div id="calc-page" class="full-page">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><h2>Calculator</h2><button class="icon-btn" onclick="closePages()">✖</button></div>
-        <input type="text" id="calc-disp" readonly style="font-size:36px; text-align:right; height:120px; background:var(--secondary); margin-top:20px;">
-        <div class="calc-grid">
-            <button class="calc-btn" style="color:red;" onclick="cClear()">C</button><button class="calc-btn" onclick="cAdd('/')">÷</button><button class="calc-btn" onclick="cAdd('*')">×</button><button class="calc-btn" onclick="cBack()">⌫</button>
-            <button class="calc-btn" onclick="cAdd('7')">7</button><button class="calc-btn" onclick="cAdd('8')">8</button><button class="calc-btn" onclick="cAdd('9')">9</button><button class="calc-btn" onclick="cAdd('-')">-</button>
-            <button class="calc-btn" onclick="cAdd('4')">4</button><button class="calc-btn" onclick="cAdd('5')">5</button><button class="calc-btn" onclick="cAdd('6')">6</button><button class="calc-btn" onclick="cAdd('+')">+</button>
-            <button class="calc-btn" onclick="cAdd('1')">1</button><button class="calc-btn" onclick="cAdd('2')">2</button><button class="calc-btn" onclick="cAdd('3')">3</button><button class="calc-btn" style="background:var(--primary); color:white; grid-row: span 2;" onclick="cSolve()">=</button>
-            <button class="calc-btn" style="grid-column: span 2;" onclick="cAdd('0')">0</button><button class="calc-btn" onclick="cAdd('.')">.</button>
+    <div id="calc-modal" class="modal">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><h2>Calculator</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
+        <input type="text" id="c-disp" readonly style="font-size:35px; text-align:right; height:100px; background:var(--secondary); margin-top:20px;">
+        <div class="calc-keys">
+            <button class="key" style="color:red;" onclick="cClr()">C</button><button class="key" onclick="cIn('/')">÷</button><button class="key" onclick="cIn('*')">×</button><button class="key" onclick="cBack()">⌫</button>
+            <button class="key" onclick="cIn('7')">7</button><button class="key" onclick="cIn('8')">8</button><button class="key" onclick="cIn('9')">9</button><button class="key" onclick="cIn('-')">-</button>
+            <button class="key" onclick="cIn('4')">4</button><button class="key" onclick="cIn('5')">5</button><button class="key" onclick="cIn('6')">6</button><button class="key" onclick="cIn('+')">+</button>
+            <button class="key" onclick="cIn('1')">1</button><button class="key" onclick="cIn('2')">2</button><button class="key" onclick="cIn('3')">3</button><button class="key" style="background:var(--primary); color:white; grid-row:span 2;" onclick="cRes()">=</button>
+            <button class="key" style="grid-column:span 2;" onclick="cIn('0')">0</button><button class="key" onclick="cIn('.')">.</button>
         </div>
     </div>
 
-    <div id="meter-page" class="full-page">
-        <div style="display:flex; justify-content:space-between; align-items:center;"><h2>Rickshaw Meter</h2><button class="icon-btn" onclick="closePages()">✖</button></div>
-        <input type="number" id="meter-km" placeholder="Enter KM" oninput="solveMeter(this.value)">
-        <div style="background:var(--secondary); border-radius:30px; padding:50px 20px; text-align:center; margin-top:30px;">
-            <small style="font-weight:800; color:var(--light);">TOTAL FARE</small>
-            <h1 id="meter-res" style="font-size:70px; color:var(--primary);">₹0</h1>
+    <div id="meter-modal" class="modal">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><h2>Meter Calc</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
+        <input type="number" id="m-in" placeholder="Enter KM" oninput="mCalc(this.value)">
+        <div style="background:var(--secondary); border-radius:30px; padding:40px; text-align:center; margin-top:30px;">
+            <h1 id="m-res" style="font-size:60px; color:var(--primary);">₹0</h1>
         </div>
     </div>
 
-    <div id="entrySheet" class="sheet-overlay"><div class="bottom-sheet">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>New Trip</h3><button class="icon-btn" onclick="closeSheets()">✖</button></div>
-        <select id="typeIn" onchange="updateCats()"><option value="earning">💰 Sawari Income</option><option value="expense">💸 Expense</option></select>
-        <input type="number" id="amtIn" placeholder="Amount ₹" oninput="calcKm(this.value)">
-        <p id="km-info" style="color:var(--primary); font-weight:800; font-size:12px; margin-bottom:10px;">KM: 0.0</p>
-        <select id="catIn"></select>
-        <button class="primary-btn" onclick="handleAction()">GENERATE TRANSACTION</button>
+    <div id="sheet-entry" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>New Entry</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <select id="t-type" onchange="upCats()"><option value="earning">💰 Income (Sawari)</option><option value="expense">💸 Expense</option></select>
+        <input type="number" id="t-amt" placeholder="Amount ₹" oninput="kmShow(this.value)">
+        <p id="km-info" style="color:var(--primary); font-weight:800; font-size:11px; margin-bottom:10px;">Estimated KM: 0.0</p>
+        <select id="t-cat"></select>
+        <button class="btn-primary" onclick="processEntry()">CONTINUE</button>
     </div></div>
 
-    <div id="qrView" style="display:none; position:fixed; inset:0; background:var(--white); z-index:6000; flex-direction:column; align-items:center; justify-content:center; padding:30px;">
-        <div id="qr-badge" style="padding:10px 25px; border-radius:15px; color:white; font-weight:800; margin-bottom:20px;">MODE</div>
-        <div id="fullQrCode" style="padding:15px; border:4px solid var(--primary); border-radius:25px;"></div>
-        <p id="qr-upi" style="margin-top:20px; font-weight:700; color:var(--light); font-size:12px;"></p>
-        <button class="primary-btn" style="max-width:300px; margin-top:30px;" onclick="saveData(true)">CONFIRM & PLAY VOICE</button>
-        <button style="margin-top:20px; border:none; background:none; color:var(--primary); font-weight:800;" onclick="closeQR()">✖ CANCEL</button>
+    <div id="qr-view" style="display:none; position:fixed; inset:0; background:var(--white); z-index:6000; flex-direction:column; align-items:center; justify-content:center; padding:30px;">
+        <div id="qr-label" style="padding:10px 25px; border-radius:15px; color:white; font-weight:800; margin-bottom:20px;">MODE</div>
+        <div id="qr-code" style="padding:15px; border:4px solid var(--primary); border-radius:25px;"></div>
+        <p id="qr-addr" style="margin-top:20px; font-weight:700; color:var(--light); font-size:12px;"></p>
+        <button class="btn-primary" style="max-width:300px; margin-top:30px;" onclick="saveFinal(true)">CONFIRM & PLAY VOICE</button>
+        <button style="margin-top:20px; border:none; background:none; color:var(--primary); font-weight:800;" onclick="document.getElementById('qr-view').style.display='none'">✖ CANCEL</button>
     </div>
 
-    <div id="settingsSheet" class="sheet-overlay"><div class="bottom-sheet">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>Config</h3><button class="icon-btn" onclick="closeSheets()">✖</button></div>
-        <input type="text" id="emiUpiId" placeholder="EMI UPI ID">
-        <input type="text" id="profitUpiId" placeholder="Profit UPI ID">
-        <input type="number" id="dailyGoalIn" placeholder="Daily Target ₹ (Ex: 1500)">
-        <input type="text" id="voiceMsgIn" placeholder="Voice Msg (Ex: Received [AMT] ₹)">
-        <div id="emi-list-cont"></div>
-        <button class="primary-btn" style="margin-top:10px; background:#444;" onclick="addEmiRow()">+ ADD LOAN/EMI</button>
-        <button class="primary-btn" style="margin-top:15px;" onclick="saveSettings()">SYNC TO CLOUD</button>
+    <div id="sheet-config" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Settings</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <input type="text" id="set-emi-upi" placeholder="EMI UPI ID">
+        <input type="text" id="set-prof-upi" placeholder="Profit UPI ID">
+        <input type="number" id="set-goal" placeholder="Daily Target (Ex: 1500)">
+        <input type="text" id="set-voice" placeholder="Voice Alert (Ex: Received [AMT] ₹)">
+        <div id="emi-list"></div>
+        <button class="btn-primary" style="background:#444; margin-top:10px;" onclick="addEmiRow()">+ ADD EMI/LOAN</button>
+        <button class="btn-primary" style="margin-top:10px;" onclick="saveSettings()">SAVE & SYNC CLOUD</button>
     </div></div>
 
-    <div id="historySheet" class="sheet-overlay"><div class="bottom-sheet">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>History</h3><button class="icon-btn" onclick="closeSheets()">✖</button></div>
-        <input type="date" id="hist-date" onchange="loadHistory()">
-        <div id="hist-stats" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;"></div>
-        <div id="hist-list" style="margin-top:20px;"></div>
+    <div id="sheet-history" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>History</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <input type="date" id="hist-date" onchange="fetchHistory()">
+        <div id="hist-sum" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;"></div>
+        <div id="hist-data" style="margin-top:20px;"></div>
     </div></div>
 
-    <div id="profileSheet" class="sheet-overlay"><div class="bottom-sheet">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h3>My Profile</h3><button class="icon-btn" onclick="closeSheets()">✖</button></div>
-        <div style="text-align:center; padding:20px 0; border-bottom:1px solid var(--secondary);">
-            <img id="prof-pic" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary);">
-            <h2 id="prof-name" style="margin-top:10px;">User</h2>
-            <p id="prof-email" style="color:var(--light); font-size:13px;"></p>
+    <div id="sheet-analysis" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Analytics</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto;">
+            <button class="btn-icon" style="width:auto; padding:0 15px;" onclick="runAnalysis(15)">15 Days</button>
+            <button class="btn-icon" style="width:auto; padding:0 15px;" onclick="runAnalysis(30)">1 Month</button>
+            <button class="btn-icon" style="width:auto; padding:0 15px;" onclick="runAnalysis(90)">3 Months</button>
         </div>
-        <div style="padding:20px 0;">
-            <p style="font-size:13px; color:var(--light);">Total Account Age: <b>Active</b></p>
-            <button class="primary-btn" style="background:#D32F2F; margin-top:30px;" onclick="logout()">LOGOUT & CLEAR CACHE</button>
+        <div id="analysis-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+    </div></div>
+
+    <div id="sheet-profile" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Profile</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <div style="text-align:center; padding-bottom:20px; border-bottom:1px solid #EEE;">
+            <img id="p-img" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary);">
+            <h2 id="p-name" style="margin-top:10px;">User</h2>
+            <p id="p-email" style="color:var(--light); font-size:12px;"></p>
         </div>
+        <button class="btn-primary" style="margin-top:30px; background:#D32F2F;" onclick="signOutUser()">LOGOUT FROM DEVICE</button>
     </div></div>
 
     <script type="module">
@@ -198,159 +197,202 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        let user = null;
-        let transactions = [];
-        let chart = null;
+        let currUser = null;
+        let trips = [];
+        let mainChart = null;
 
-        // AUTH PERSISTENCE
+        // AUTH & PERSISTENCE
         setPersistence(auth, browserLocalPersistence);
-
-        document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
-        window.logout = () => signOut(auth).then(() => location.reload());
+        document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
+        window.signOutUser = () => signOut(auth).then(() => location.reload());
 
         onAuthStateChanged(auth, (u) => {
             if (u) {
-                user = u;
+                currUser = u;
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                document.getElementById('user-name').innerText = u.displayName;
-                document.getElementById('user-email').innerText = u.email;
-                document.getElementById('user-pic').src = u.photoURL;
-                document.getElementById('prof-name').innerText = u.displayName;
-                document.getElementById('prof-email').innerText = u.email;
-                document.getElementById('prof-pic').src = u.photoURL;
-                initData();
+                document.getElementById('app-shell').style.display = 'block';
+                document.getElementById('u-name').innerText = u.displayName;
+                document.getElementById('u-email').innerText = u.email;
+                document.getElementById('u-img').src = u.photoURL;
+                document.getElementById('p-name').innerText = u.displayName;
+                document.getElementById('p-email').innerText = u.email;
+                document.getElementById('p-img').src = u.photoURL;
+                syncData();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('app-content').style.display = 'none';
+                document.getElementById('app-shell').style.display = 'none';
             }
         });
 
-        // DATA LOGIC
-        function initData() {
-            onSnapshot(query(collection(db, `users/${user.uid}/trips`), orderBy("timestamp", "desc")), (s) => {
-                transactions = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                render();
+        // SYNC LOGIC
+        function syncData() {
+            onSnapshot(query(collection(db, `users/${currUser.uid}/trips`), orderBy("timestamp", "desc")), (s) => {
+                trips = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderUI();
             });
-            onSnapshot(doc(db, `users/${user.uid}/config/settings`), (d) => {
+            onSnapshot(doc(db, `users/${currUser.uid}/config/settings`), (d) => {
                 if(d.exists()) {
-                    const s = d.data();
-                    localStorage.setItem('config', JSON.stringify(s));
-                    render();
+                    localStorage.setItem('settings', JSON.stringify(d.data()));
+                    renderUI();
                 }
             });
         }
 
         const getToday = () => new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
 
-        window.handleAction = () => {
-            const amt = parseFloat(document.getElementById('amtIn').value);
-            if(!amt) return;
-            if(document.getElementById('typeIn').value === 'earning') {
-                const conf = JSON.parse(localStorage.getItem('config') || '{}');
-                const todayInc = transactions.filter(t => t.timestamp.startsWith(getToday()) && t.type === 'earning').reduce((s,t) => s + t.amount, 0);
-                const dailyEmi = (conf.emis || []).reduce((s,e) => s + (e.amount/30), 0);
-                
-                let upi = (todayInc < dailyEmi) ? conf.emiUpi : conf.profitUpi;
-                if(!upi) return alert("Setup Wallets in Config!");
-
-                document.getElementById('qr-badge').innerText = (todayInc < dailyEmi) ? "EMI RECOVERY" : "PROFIT MODE";
-                document.getElementById('qr-badge').style.background = (todayInc < dailyEmi) ? "#800000" : "#2E7D32";
-                document.getElementById('qr-upi').innerText = `SEND TO: ${upi}`;
-                document.getElementById('qrView').style.display = 'flex';
-                const qrDiv = document.getElementById('fullQrCode'); qrDiv.innerHTML = "";
-                new QRCode(qrDiv, { text: `upi://pay?pa=${upi}&pn=ProMaster&am=${amt}&cu=INR`, width: 220, height: 220 });
-            } else { saveData(false); }
-        };
-
-        window.saveData = async (speak) => {
-            const a = parseFloat(document.getElementById('amtIn').value);
-            const ts = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).replace(" ", "T");
-            const km = (document.getElementById('typeIn').value === 'earning' && a >= 25) ? (1.5 + ((a - 25) / 17)).toFixed(1) : 0;
-            await addDoc(collection(db, `users/${user.uid}/trips`), { amount: a, type: document.getElementById('typeIn').value, category: document.getElementById('catIn').value, km: km, timestamp: ts });
-            if(speak) {
-                const conf = JSON.parse(localStorage.getItem('config') || '{}');
-                const msg = (conf.voiceMsg || "Received [AMT] Rupees").replace("[AMT]", Math.round(a));
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(finalMsg));
-            }
-            closeQR(); closeSheets();
-            document.getElementById('amtIn').value = "";
-        };
-
-        function render() {
+        // RENDER LOGIC
+        function renderUI() {
             const today = getToday();
-            const conf = JSON.parse(localStorage.getItem('config') || '{}');
-            const target = parseFloat(conf.dailyGoal) || 1500;
-            const dailyEmi = (conf.emis || []).reduce((s,e) => s + (e.amount/30), 0);
+            const set = JSON.parse(localStorage.getItem('settings') || '{}');
+            const target = parseFloat(set.dailyGoal) || 1500;
+            const dailyEmi = (set.emis || []).reduce((s,e) => s + (e.amount/30), 0);
 
             let tInc = 0, tExp = 0;
-            const list = document.getElementById('main-tx-list'); list.innerHTML = '';
-            transactions.filter(t => t.timestamp.startsWith(today)).forEach(t => {
+            const list = document.getElementById('today-list'); list.innerHTML = '';
+            
+            trips.filter(t => t.timestamp.startsWith(today)).forEach(t => {
                 if(t.type === 'earning') tInc += t.amount; else tExp += t.amount;
-                list.innerHTML += `<div class="tx-card">
-                    <div><b>${t.category}</b><br>${t.km > 0 ? `<span class="km-tag">${t.km} KM</span>` : ''} <small style="color:#999; margin-left:5px;">${t.timestamp.split('T')[1].substring(0,5)}</small></div>
+                list.innerHTML += `<div class="trip-item">
+                    <div><b>${t.category}</b><br>${t.km > 0 ? `<span class="km-badge">${t.km} KM</span>` : ''} <small style="margin-left:5px; color:#999;">${t.timestamp.split('T')[1].substring(0,5)}</small></div>
                     <div style="display:flex; align-items:center; gap:12px;">
                         <b style="color:${t.type==='earning'?'#2E7D32':'#D32F2F'};">₹${Math.round(t.amount)}</b>
-                        <span class="material-symbols-rounded" style="color:#DDD; font-size:20px;" onclick="deleteTx('${t.id}')">delete</span>
+                        <span class="material-symbols-rounded" style="color:#DDD; font-size:18px;" onclick="delTrip('${t.id}')">delete</span>
                     </div>
                 </div>`;
             });
 
-            document.getElementById('net-display').innerText = `₹${Math.round(tInc)}`;
-            document.getElementById('pending-label').innerText = (tInc < target) ? `PENDING: ₹${Math.round(target - tInc)}` : `TARGET ACHIEVED!`;
-            document.getElementById('emi-collect').innerText = `₹${Math.round(Math.min(tInc, dailyEmi))}`;
-            document.getElementById('profit-collect').innerText = `₹${Math.round(Math.max(0, tInc - dailyEmi - tExp))}`;
-            document.getElementById('health-fill').style.width = `${Math.min(100, (tInc/target)*100)}%`;
+            document.getElementById('dash-total').innerText = `₹${Math.round(tInc)}`;
+            document.getElementById('pending-val').innerText = (tInc < target) ? `PENDING: ₹${Math.round(target - tInc)}` : `TARGET ACHIEVED!`;
+            document.getElementById('dash-emi').innerText = `₹${Math.round(Math.min(tInc, dailyEmi))}`;
+            document.getElementById('dash-profit').innerText = `₹${Math.round(Math.max(0, tInc - dailyEmi - tExp))}`;
+            document.getElementById('progress-bar').style.width = `${Math.min(100, (tInc/target)*100)}%`;
         }
 
-        // CALC & METER
-        window.cAdd = (v) => document.getElementById('calc-disp').value += v;
-        window.cClear = () => document.getElementById('calc-disp').value = '';
-        window.cBack = () => document.getElementById('calc-disp').value = document.getElementById('calc-disp').value.slice(0,-1);
-        window.cSolve = () => { try { document.getElementById('calc-disp').value = eval(document.getElementById('calc-disp').value); } catch { alert("Error"); } };
-        window.solveMeter = (km) => document.getElementById('meter-res').innerText = `₹${Math.round(km <= 1.5 ? 25 : 25 + (km-1.5)*17)}`;
+        // ACTIONS
+        window.processEntry = () => {
+            const amt = parseFloat(document.getElementById('t-amt').value);
+            if(!amt) return;
+            if(document.getElementById('t-type').value === 'earning') {
+                const set = JSON.parse(localStorage.getItem('settings') || '{}');
+                const tIncToday = trips.filter(t => t.timestamp.startsWith(getToday()) && t.type === 'earning').reduce((s,t) => s + t.amount, 0);
+                const dEmi = (set.emis || []).reduce((s,e) => s + (e.amount/30), 0);
+                
+                let upi = (tIncToday < dEmi) ? set.emiUpi : set.profUpi;
+                if(!upi) return alert("Setup Wallets in Settings!");
 
-        window.openPage = (id) => document.getElementById(id).style.display = 'flex';
-        window.closePages = () => document.querySelectorAll('.full-page').forEach(p => p.style.display = 'none');
-        window.openSheet = (id) => document.getElementById(id).style.display = 'flex';
-        window.closeSheets = () => document.querySelectorAll('.sheet-overlay').forEach(s => s.style.display = 'none');
-        window.closeQR = () => document.getElementById('qrView').style.display = 'none';
-        
+                document.getElementById('qr-label').innerText = (tIncToday < dEmi) ? "EMI RECOVERY" : "PROFIT MODE";
+                document.getElementById('qr-label').style.background = (tIncToday < dEmi) ? "#800000" : "#2E7D32";
+                document.getElementById('qr-addr').innerText = `SEND TO: ${upi}`;
+                document.getElementById('qr-view').style.display = 'flex';
+                const qrDiv = document.getElementById('qr-code'); qrDiv.innerHTML = "";
+                new QRCode(qrDiv, { text: `upi://pay?pa=${upi}&pn=SurajPro&am=${amt}&cu=INR`, width: 220, height: 220 });
+            } else { saveFinal(false); }
+        };
+
+        window.saveFinal = async (v) => {
+            const a = parseFloat(document.getElementById('t-amt').value);
+            const ts = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).replace(" ", "T");
+            const km = (document.getElementById('t-type').value === 'earning' && a >= 25) ? (1.5 + ((a - 25) / 17)).toFixed(1) : 0;
+            await addDoc(collection(db, `users/${currUser.uid}/trips`), { amount: a, type: document.getElementById('t-type').value, category: document.getElementById('t-cat').value, km: km, timestamp: ts });
+            if(v) {
+                const set = JSON.parse(localStorage.getItem('settings') || '{}');
+                const msg = (set.voice || "Received [AMT] Rupees").replace("[AMT]", Math.round(a));
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
+            }
+            document.getElementById('qr-view').style.display = 'none'; closeSheets();
+            document.getElementById('t-amt').value = "";
+        };
+
+        // UTILS
+        window.openSheet = (id) => {
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'sheet-config') {
+                const s = JSON.parse(localStorage.getItem('settings') || '{}');
+                document.getElementById('set-emi-upi').value = s.emiUpi || '';
+                document.getElementById('set-prof-upi').value = s.profUpi || '';
+                document.getElementById('set-goal').value = s.dailyGoal || '';
+                document.getElementById('set-voice').value = s.voice || '';
+                const cont = document.getElementById('emi-list'); cont.innerHTML = '';
+                (s.emis || []).forEach(e => addEmiRow(e.name, e.amount));
+            }
+            if(id === 'sheet-history') { document.getElementById('hist-date').value = getToday(); fetchHistory(); }
+            if(id === 'sheet-analysis') runAnalysis(30);
+        };
+
+        window.closeSheets = () => document.querySelectorAll('.overlay').forEach(s => s.style.display = 'none');
+        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+        window.closeModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+        window.addEmiRow = (n='', a='') => {
+            const div = document.createElement('div'); div.className = 'emi-row'; div.style = "display:flex; gap:8px; margin-top:8px;";
+            div.innerHTML = `<input type="text" placeholder="Loan" value="${n}"><input type="number" placeholder="Total" value="${a}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; padding:10px;">✖</button>`;
+            document.getElementById('emi-list').appendChild(div);
+        };
+
         window.saveSettings = async () => {
             const emis = [];
             document.querySelectorAll('.emi-row').forEach(r => {
                 const inps = r.querySelectorAll('input');
                 if(inps[0].value) emis.push({ name: inps[0].value, amount: parseFloat(inps[1].value) });
             });
-            await setDoc(doc(db, `users/${user.uid}/config/settings`), {
-                emiUpi: document.getElementById('emiUpiId').value,
-                profitUpi: document.getElementById('profitUpiId').value,
-                dailyGoal: document.getElementById('dailyGoalIn').value,
-                voiceMsg: document.getElementById('voiceMsgIn').value,
+            await setDoc(doc(db, `users/${currUser.uid}/config/settings`), {
+                emiUpi: document.getElementById('set-emi-upi').value,
+                profUpi: document.getElementById('set-prof-upi').value,
+                dailyGoal: document.getElementById('set-goal').value,
+                voice: document.getElementById('set-voice').value,
                 emis: emis
             });
             closeSheets();
         };
 
-        window.addEmiRow = (n='', a='') => {
-            const div = document.createElement('div'); div.className = 'emi-row';
-            div.style = "display:flex; gap:8px; margin-top:8px;";
-            div.innerHTML = `<input type="text" placeholder="Loan" value="${n}"><input type="number" placeholder="Total" value="${a}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none;">✖</button>`;
-            document.getElementById('emi-list-cont').appendChild(div);
-        };
+        // CALC & METER
+        window.cIn = (v) => document.getElementById('c-disp').value += v;
+        window.cClr = () => document.getElementById('c-disp').value = '';
+        window.cBack = () => document.getElementById('c-disp').value = document.getElementById('c-disp').value.slice(0,-1);
+        window.cRes = () => { try { document.getElementById('c-disp').value = eval(document.getElementById('c-disp').value); } catch { alert("Error"); } };
+        window.mCalc = (km) => document.getElementById('m-res').innerText = `₹${Math.round(km <= 1.5 ? 25 : 25 + (km-1.5)*17)}`;
+        window.kmShow = (v) => document.getElementById('km-info').innerText = `Estimated KM: ${v >= 25 ? (1.5 + (v-25)/17).toFixed(1) : 0}`;
 
-        window.loadHistory = () => {
+        window.upCats = () => {
+            const t = document.getElementById('t-type').value;
+            document.getElementById('t-cat').innerHTML = t === 'earning' ? `<option value="🛺 Sawari">Sawari Ride</option><option value="💰 Tip">Extra Tip</option>` : `<option value="⛽ Fuel">Fuel</option><option value="🍲 Food">Food</option><option value="Other">Other</option>`;
+        };
+        window.upCats();
+
+        window.fetchHistory = () => {
             const sel = document.getElementById('hist-date').value;
             let inc = 0, exp = 0, html = "";
-            transactions.filter(t => t.timestamp.startsWith(sel)).forEach(t => {
+            trips.filter(t => t.timestamp.startsWith(sel)).forEach(t => {
                 if(t.type === 'earning') inc += t.amount; else exp += t.amount;
-                html += `<div class="tx-card"><b>${t.category}</b><b>₹${Math.round(t.amount)}</b></div>`;
+                html += `<div class="trip-item"><b>${t.category}</b><b>₹${Math.round(t.amount)}</b></div>`;
             });
-            document.getElementById('hist-stats').innerHTML = `<div class="stat-card">Inc: ₹${Math.round(inc)}</div><div class="stat-card">Net: ₹${Math.round(inc-exp)}</div>`;
-            document.getElementById('hist-list').innerHTML = html || "No data";
+            document.getElementById('hist-sum').innerHTML = `<div class="stat-box">Earn: ₹${Math.round(inc)}</div><div class="stat-box">Net: ₹${Math.round(inc-exp)}</div>`;
+            document.getElementById('hist-data').innerHTML = html || "No records.";
         };
 
-        window.deleteTx = async (id) => { if(confirm("Remove Trip?")) await deleteDoc(doc(db, `users/${user.uid}/trips`, id)); };
+        window.runAnalysis = (days) => {
+            const cut = new Date(); cut.setDate(cut.getDate() - days);
+            const filtered = trips.filter(t => new Date(t.timestamp) >= cut);
+            const inc = filtered.filter(t => t.type === 'earning').reduce((s, e) => s + e.amount, 0);
+            const exp = filtered.filter(t => t.type === 'expense').reduce((s, e) => s + e.amount, 0);
+            document.getElementById('analysis-grid').innerHTML = `<div class="stat-box">Revenue<br>₹${Math.round(inc)}</div><div class="stat-box">Saved<br>₹${Math.round(inc-exp)}</div>`;
+        };
+
+        window.delTrip = async (id) => { if(confirm("Remove Trip?")) await deleteDoc(doc(db, `users/${currUser.uid}/trips`, id)); };
+        window.toggleChart = () => {
+            const c = document.getElementById('chart-cont'); c.style.display = c.style.display === 'none' ? 'block' : 'none';
+            if(c.style.display === 'block') {
+                const ctx = document.getElementById('mainChart').getContext('2d');
+                const data = [], labels = [];
+                for(let i=6; i>=0; i--) {
+                    const d = new Date(); d.setDate(d.getDate()-i); const ds = d.toISOString().split('T')[0];
+                    labels.push(d.toLocaleDateString('hi-IN', {weekday:'short'}));
+                    data.push(trips.filter(t => t.timestamp.startsWith(ds)).reduce((s,t) => s + (t.type==='earning'?t.amount:-t.amount), 0));
+                }
+                if(mainChart) mainChart.destroy();
+                mainChart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor:'#800000', borderRadius:8 }] }, options:{ plugins:{ legend:{display:false} }, scales:{ y:{display:false}, x:{grid:{display:false}} } } });
+            }
+        };
     </script>
 </body>
 </html>
