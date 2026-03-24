@@ -3,54 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Suraj Pro Master - Strong Logic v4</title>
+    <title>Suraj Pro Master - Original Elite</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
-    
     <style>
-        :root { --primary: #800000; --secondary: #FAF5F0; --white: #FFFFFF; --text: #2C1A1A; --success: #1B5E20; }
+        :root { --primary: #800000; --secondary: #FAF5F0; --white: #FFFFFF; --text: #2C1A1A; --light: #8D7A7A; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--secondary); color: var(--text); height: 100vh; width: 100vw; overflow: hidden; position: fixed; }
 
-        /* Auth Screen */
+        /* Auth View */
         #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2C1A1A 0%, #800000 100%); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .auth-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 40px; border-radius: 40px; text-align: center; color: white; width: 100%; max-width: 360px; }
+        .auth-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 40px 30px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 360px; text-align: center; color: white; }
 
-        /* Main Shell */
-        .app-bar { height: 75px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .main-view { height: calc(100vh - 160px); overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        /* App Bar */
+        .app-bar { height: 80px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; background: var(--white); border-bottom: 1px solid rgba(128,0,0,0.08); }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-profile img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary); }
+        .tool-group { display: flex; gap: 10px; }
+        .btn-icon { width: 45px; height: 45px; border-radius: 14px; background: var(--secondary); color: var(--primary); border: 1px solid rgba(128,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* Main View */
+        .main-view { height: calc(100vh - 165px); overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        .premium-card { background: linear-gradient(135deg, var(--primary) 0%, #4D0000 100%); color: var(--white); border-radius: 28px; padding: 25px; box-shadow: 0 15px 35px rgba(128,0,0,0.25); margin-bottom: 20px; }
         
-        .premium-card { background: linear-gradient(135deg, var(--primary) 0%, #4D0000 100%); color: var(--white); border-radius: 28px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(128,0,0,0.2); }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-box { background: var(--white); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(0,0,0,0.05); }
+        .stat-box { background: var(--white); padding: 15px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid rgba(128,0,0,0.05); text-align: center; }
 
-        /* Modals & Layouts */
-        .modal { display: none; position: fixed; inset: 0; background: var(--white); z-index: 5000; flex-direction: column; padding: 25px; }
+        .trip-item { background: var(--white); padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .km-badge { font-size: 10px; background: var(--secondary); color: var(--primary); padding: 3px 8px; border-radius: 8px; font-weight: 800; }
+
+        /* Overlays & Sheets */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: flex-end; backdrop-filter: blur(8px); }
-        .sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 25px; max-height: 85vh; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; }
+        .sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
-        /* Calculator - Accurate Sizing */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
-        .key { height: 70px; border-radius: 20px; border: none; background: var(--secondary); font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; justify-content: center; }
-        .key:active { background: #EBDED5; }
-        #c-disp { width: 100%; height: 90px; background: var(--secondary); border-radius: 20px; border: none; font-size: 40px; text-align: right; padding: 20px; color: var(--primary); font-weight: 800; }
+        /* Calculator Modal */
+        .modal { display: none; position: fixed; inset: 0; background: var(--white); z-index: 5000; flex-direction: column; padding: 25px; }
+        .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
+        .key { height: 75px; border-radius: 20px; border: none; background: var(--secondary); font-size: 24px; font-weight: 700; color: var(--primary); display: flex; align-items: center; justify-content: center; }
+        .key:active { background: #eee; }
 
-        /* Meter Inputs */
-        .meter-input-group { background: var(--secondary); padding: 20px; border-radius: 25px; margin-bottom: 15px; }
-        .input-row { display: flex; align-items: center; background: var(--white); padding: 12px 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #EEE; }
-        .input-row input { border: none; outline: none; width: 100%; margin-left: 10px; font-weight: 600; color: var(--text); font-size: 15px; }
-
-        /* Nav & FAB */
+        /* Bottom Nav - Fixed as requested */
         .bottom-nav { height: 85px; background: var(--white); position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #BBB0B0; border: none; background: none; font-size: 11px; font-weight: 700; gap: 5px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #BBB0B0; border: none; background: none; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
         .action-fab { width: 65px; height: 65px; background: var(--primary); color: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; transform: translateY(-30px); border: 6px solid var(--secondary); box-shadow: 0 10px 20px rgba(128,0,0,0.3); }
 
-        .btn-primary { width: 100%; padding: 18px; border: none; border-radius: 20px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; margin-top: 10px; }
-        .btn-icon { width: 45px; height: 45px; border-radius: 12px; background: var(--secondary); border: none; color: var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        
-        .trip-item { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(0,0,0,0.02); }
+        input, select { width: 100%; padding: 18px; margin: 10px 0; border-radius: 18px; background: var(--secondary); border: none; font-size: 16px; font-weight: 600; outline: none; }
+        .btn-primary { width: 100%; padding: 18px; border: none; border-radius: 20px; background: var(--primary); color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -58,118 +60,130 @@
     <div id="auth-screen">
         <div class="auth-glass">
             <div style="font-size:40px; margin-bottom:15px;">🛺</div>
-            <h1 style="font-size:24px; margin-bottom:5px;">SURAJ PRO v4</h1>
-            <p style="opacity:0.8; font-size:12px; margin-bottom:30px;">Strong Accurate Logic</p>
-            <button class="btn-primary" style="background:white; color:var(--primary);" id="google-login">GOOGLE LOGIN</button>
+            <h1 style="font-family:'Marcellus',serif; font-size:26px;">SURAJ PRO MASTER</h1>
+            <p style="opacity:0.7; font-size:13px; margin-bottom:30px;">Professional Business Management</p>
+            <button class="btn-primary" style="background:white; color:var(--primary);" id="google-login">LOGIN WITH GOOGLE</button>
         </div>
     </div>
 
     <div id="app-shell" style="display:none;">
         <div class="app-bar">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img id="u-img" style="width:42px; height:42px; border-radius:50%; border:2px solid var(--primary);">
-                <div><b id="u-name" style="font-size:14px;">Suraj</b><br><small id="u-email" style="font-size:9px; color:var(--light); font-weight:700;"></small></div>
+            <div class="user-profile">
+                <img id="u-img" src="">
+                <div><b id="u-name" style="font-size:14px;">Suraj</b><br><small id="u-email" style="font-size:9px; color:var(--light); font-weight:800;"></small></div>
             </div>
-            <div style="display:flex; gap:8px;">
-                <button class="btn-icon" onclick="openModal('meter-modal')"><span class="material-symbols-rounded">navigation</span></button>
+            <div class="tool-group">
+                <button class="btn-icon" onclick="openModal('meter-modal')"><span class="material-symbols-rounded">speed</span></button>
                 <button class="btn-icon" onclick="openModal('calc-modal')"><span class="material-symbols-rounded">calculate</span></button>
             </div>
         </div>
 
         <div class="main-view">
             <div class="premium-card">
-                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; opacity:0.8;"><span>DAILY TARGET</span><span id="pending-val">...</span></div>
-                <div id="dash-total" style="font-size:48px; font-weight:800; margin:10px 0;">₹0</div>
-                <div style="height:8px; background:rgba(0,0,0,0.2); border-radius:10px;"><div id="progress-bar" style="height:100%; width:0%; background:white; border-radius:10px; transition: 0.5s;"></div></div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; opacity:0.8;">
+                    <span>DAILY TARGET TRACKER</span>
+                    <span id="pending-val">...</span>
+                </div>
+                <div id="dash-total" style="font-size:45px; font-weight:800; margin:10px 0;">₹0</div>
+                <div style="height:10px; background:rgba(0,0,0,0.2); border-radius:10px;"><div id="progress-bar" style="height:100%; width:0%; background:white; border-radius:10px; transition:1s;"></div></div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-box"><small style="font-weight:800; color:var(--light);">EMI PART</small><h3 id="dash-emi" style="color:var(--primary);">₹0</h3></div>
-                <div class="stat-box"><small style="font-weight:800; color:var(--light);">NET PROFIT</small><h3 id="dash-profit" style="color:var(--success);">₹0</h3></div>
+                <div class="stat-box"><small style="color:var(--light); font-weight:800;">EMI PART</small><h3 id="dash-emi" style="color:var(--primary);">₹0</h3></div>
+                <div class="stat-box"><small style="color:var(--light); font-weight:800;">NET PROFIT</small><h3 id="dash-profit" style="color:green;">₹0</h3></div>
             </div>
 
-            <h3 style="font-size:11px; font-weight:800; color:var(--light); margin-bottom:12px; letter-spacing:1px; text-transform:uppercase;">Trips Overview</h3>
+            <button class="btn-primary" style="background:white; color:var(--primary); font-size:12px; margin-bottom:20px; padding:12px;" onclick="toggleChart()">VIEW PERFORMANCE GRAPH</button>
+            <div id="chart-cont" style="display:none; background:white; padding:15px; border-radius:24px; margin-bottom:20px;"><canvas id="mainChart"></canvas></div>
+
+            <h3 style="font-size:12px; font-weight:800; color:var(--light); margin-bottom:15px; letter-spacing:1px;">TODAY'S TRIPS</h3>
             <div id="today-list"></div>
         </div>
 
         <div class="bottom-nav">
-            <button class="nav-item" onclick="openSheet('sheet-history')"><span class="material-symbols-rounded">history</span>History</button>
+            <button class="nav-item" onclick="openSheet('sheet-history')"><span class="material-symbols-rounded">history</span>HISTORY</button>
+            <button class="nav-item" onclick="openSheet('sheet-analysis')"><span class="material-symbols-rounded">query_stats</span>ANALYTICS</button>
             <div class="action-fab" onclick="openSheet('sheet-entry')"><span class="material-symbols-rounded" style="font-size:35px;">add</span></div>
-            <button class="nav-item" onclick="openSheet('sheet-config')"><span class="material-symbols-rounded">settings</span>Settings</button>
-        </div>
-    </div>
-
-    <div id="calc-modal" class="modal">
-        <div class="header"><h2>Calculator</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
-        <input type="text" id="c-disp" readonly placeholder="0">
-        <div class="calc-grid">
-            <button class="key" style="color:red;" onclick="cClr()">C</button><button class="key" onclick="cIn('/')">÷</button><button class="key" onclick="cIn('*')">×</button><button class="key" onclick="cBack()">⌫</button>
-            <button class="key" onclick="cIn('7')">7</button><button class="key" onclick="cIn('8')">8</button><button class="key" onclick="cIn('9')">9</button><button class="key" onclick="cIn('-')">-</button>
-            <button class="key" onclick="cIn('4')">4</button><button class="key" onclick="cIn('5')">5</button><button class="key" onclick="cIn('6')">6</button><button class="key" onclick="cIn('+')">+</button>
-            <button class="key" onclick="cIn('1')">1</button><button class="key" onclick="cIn('2')">2</button><button class="key" onclick="cIn('3')">3</button><button class="key" style="background:var(--primary); color:white; height:152px; grid-row: span 2;" onclick="cRes()">=</button>
-            <button class="key" style="grid-column: span 2;" onclick="cIn('0')">0</button><button class="key" onclick="cIn('.')">.</button>
+            <button class="nav-item" onclick="openSheet('sheet-config')"><span class="material-symbols-rounded">tune</span>CONFIG</button>
+            <button class="nav-item" onclick="openSheet('sheet-profile')"><span class="material-symbols-rounded">person</span>PROFILE</button>
         </div>
     </div>
 
     <div id="meter-modal" class="modal">
-        <div class="header"><h2>Meter Navigator</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
-        
-        <div class="meter-input-group">
-            <div class="input-row"><span class="material-symbols-rounded" style="color:green;">circle</span><input type="text" id="p-loc" placeholder="Pickup (Start Point)"></div>
-            <div class="input-row"><span class="material-symbols-rounded" style="color:red;">location_on</span><input type="text" id="d-loc" placeholder="Drop (Destination)"></div>
-            <button class="btn-primary" onclick="strongCalc()">CALCULATE FARE</button>
+        <div class="sheet-head"><h2>Meter Calculator</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
+        <p style="color:var(--light); font-weight:600; margin-bottom:10px;">KM के हिसाब से किराया देखें</p>
+        <input type="number" id="m-in" placeholder="Enter KM (e.g. 5.5)" oninput="mCalc(this.value)">
+        <div style="background:var(--secondary); border-radius:30px; padding:50px; text-align:center; margin-top:30px;">
+            <small style="font-weight:800; color:var(--light);">ESTIMATED FARE</small>
+            <h1 id="m-res" style="font-size:65px; color:var(--primary);">₹0</h1>
         </div>
+        <button class="btn-primary" style="margin-top:30px;" onclick="closeModals()">CLOSE</button>
+    </div>
 
-        <div style="background:var(--secondary); border-radius:25px; padding:25px; text-align:center;">
-            <div style="display:flex; justify-content:space-around;">
-                <div><small style="font-weight:800; color:var(--light);">ROAD KM</small><h2 id="m-dist">0.0</h2></div>
-                <div style="width:1px; background:#DDD;"></div>
-                <div><small style="font-weight:800; color:var(--light);">FARE (₹)</small><h1 id="m-res" style="color:var(--primary);">₹0</h1></div>
-            </div>
+    <div id="calc-modal" class="modal">
+        <div class="sheet-head"><h2>Calculator</h2><button class="btn-icon" onclick="closeModals()">✖</button></div>
+        <input type="text" id="c-disp" readonly style="font-size:40px; text-align:right; height:100px; background:var(--secondary); margin-top:20px; padding:20px; font-weight:800; color:var(--primary); border-radius:20px;">
+        <div class="calc-keys">
+            <button class="key" style="color:red;" onclick="cClr()">C</button><button class="key" onclick="cIn('/')">÷</button><button class="key" onclick="cIn('*')">×</button><button class="key" onclick="cBack()">⌫</button>
+            <button class="key" onclick="cIn('7')">7</button><button class="key" onclick="cIn('8')">8</button><button class="key" onclick="cIn('9')">9</button><button class="key" onclick="cIn('-')">-</button>
+            <button class="key" onclick="cIn('4')">4</button><button class="key" onclick="cIn('5')">5</button><button class="key" onclick="cIn('6')">6</button><button class="key" onclick="cIn('+')">+</button>
+            <button class="key" onclick="cIn('1')">1</button><button class="key" onclick="cIn('2')">2</button><button class="key" onclick="cIn('3')">3</button><button class="key" style="background:var(--primary); color:white; height:162px; grid-row:span 2;" onclick="cRes()">=</button>
+            <button class="key" style="grid-column:span 2;" onclick="cIn('0')">0</button><button class="key" onclick="cIn('.')">.</button>
         </div>
-
-        <button id="nav-btn" class="btn-primary" style="background:#4285F4; display:none; margin-top:20px;" onclick="startNav()">
-            <span class="material-symbols-rounded" style="vertical-align:middle; margin-right:8px;">directions</span> START GOOGLE MAPS
-        </button>
     </div>
 
     <div id="sheet-entry" class="overlay"><div class="sheet">
-        <div class="header"><h3>Entry Log</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
-        <select id="t-type" onchange="upCats()"><option value="earning">💰 SAWRI (Income)</option><option value="expense">💸 EXPENSE</option></select>
-        <input type="number" id="t-amt" placeholder="Amount ₹" oninput="kmLogic(this.value)">
-        <p id="km-info" style="color:var(--primary); font-weight:800; font-size:12px; margin-bottom:15px;">Calculated KM: 0.0</p>
+        <div class="sheet-head"><h3>New Entry</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <select id="t-type" onchange="upCats()"><option value="earning">💰 Income (Sawari)</option><option value="expense">💸 Expense</option></select>
+        <input type="number" id="t-amt" placeholder="Amount ₹" oninput="kmShow(this.value)">
+        <p id="km-info" style="color:var(--primary); font-weight:800; font-size:11px; margin-bottom:10px;">Est. Distance: 0.0 KM</p>
         <select id="t-cat"></select>
-        <button class="btn-primary" onclick="processEntry()">SAVE TO CLOUD</button>
+        <button class="btn-primary" onclick="processEntry()">CONTINUE</button>
     </div></div>
 
+    <div id="qr-view" style="display:none; position:fixed; inset:0; background:var(--white); z-index:6000; flex-direction:column; align-items:center; justify-content:center; padding:30px;">
+        <div id="qr-label" style="padding:10px 25px; border-radius:15px; color:white; font-weight:800; margin-bottom:20px;">MODE</div>
+        <div id="qr-code"></div>
+        <button class="btn-primary" style="margin-top:30px;" onclick="saveFinal(true)">CONFIRM & SAVE</button>
+        <button style="margin-top:20px; border:none; background:none; color:var(--primary); font-weight:800;" onclick="document.getElementById('qr-view').style.display='none'">CANCEL</button>
+    </div>
+
     <div id="sheet-history" class="overlay"><div class="sheet">
-        <div class="header"><h3>History</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <div class="sheet-head"><h3>History</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
         <input type="date" id="hist-date" onchange="fetchHistory()">
         <div id="hist-sum" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;"></div>
         <div id="hist-data" style="margin-top:20px;"></div>
     </div></div>
 
-    <div id="sheet-config" class="overlay"><div class="sheet">
-        <div class="header"><h3>Settings</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
-        <input type="text" id="set-emi-upi" placeholder="EMI UPI ID">
-        <input type="text" id="set-prof-upi" placeholder="PROFIT UPI ID">
-        <input type="number" id="set-goal" placeholder="Daily Goal (₹)">
-        <div id="emi-list" style="margin-top:10px;"></div>
-        <button class="btn-primary" style="background:#666;" onclick="addEmiRow()">+ ADD LOAN/EMI</button>
-        <button class="btn-primary" onclick="saveSettings()">SAVE & SYNC</button>
-        <button class="btn-primary" style="background:#D32F2F; margin-top:20px;" onclick="signOutUser()">SIGN OUT</button>
+    <div id="sheet-analysis" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Analytics</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <div id="analysis-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
     </div></div>
 
-    <div id="qr-view" style="display:none; position:fixed; inset:0; background:white; z-index:6000; flex-direction:column; align-items:center; justify-content:center; padding:30px;">
-        <div id="qr-label" style="padding:12px 30px; border-radius:20px; color:white; font-weight:800; margin-bottom:20px;">MODE</div>
-        <div id="qr-code"></div>
-        <button class="btn-primary" style="max-width:300px; margin-top:30px;" onclick="saveFinal()">DONE</button>
-    </div>
+    <div id="sheet-config" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Settings</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <input type="text" id="set-emi-upi" placeholder="EMI UPI ID">
+        <input type="text" id="set-prof-upi" placeholder="Profit UPI ID">
+        <input type="number" id="set-goal" placeholder="Daily Target (₹)">
+        <div id="emi-list"></div>
+        <button class="btn-primary" style="background:#444; margin-top:10px;" onclick="addEmiRow()">+ ADD LOAN/EMI</button>
+        <button class="btn-primary" style="margin-top:15px;" onclick="saveSettings()">SAVE SETTINGS</button>
+    </div></div>
+
+    <div id="sheet-profile" class="overlay"><div class="sheet">
+        <div class="sheet-head"><h3>Profile</h3><button class="btn-icon" onclick="closeSheets()">✖</button></div>
+        <div style="text-align:center; padding-bottom:20px;">
+            <img id="p-img" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary);">
+            <h2 id="p-name" style="margin-top:10px;">User</h2>
+            <p id="p-email" style="color:var(--light); font-size:12px;"></p>
+        </div>
+        <button class="btn-primary" style="margin-top:30px; background:#D32F2F;" onclick="signOutUser()">LOGOUT</button>
+    </div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCq6ZTCMeAGhqKH7cZ3d8gn1JSjn7MFkHg", authDomain: "finance-pro-a58ef.firebaseapp.com", projectId: "finance-pro-a58ef", storageBucket: "finance-pro-a58ef.firebasestorage.app", messagingSenderId: "441176545235", appId: "1:441176545235:web:5aa38eaf789b6e5ce1c126" };
         const app = initializeApp(firebaseConfig);
@@ -177,7 +191,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        let currUser = null, trips = [];
+        let currUser = null, trips = [], mainChart = null;
 
         onAuthStateChanged(auth, (u) => {
             if (u) {
@@ -187,6 +201,9 @@
                 document.getElementById('u-name').innerText = u.displayName;
                 document.getElementById('u-email').innerText = u.email;
                 document.getElementById('u-img').src = u.photoURL;
+                document.getElementById('p-name').innerText = u.displayName;
+                document.getElementById('p-email').innerText = u.email;
+                document.getElementById('p-img').src = u.photoURL;
                 syncData();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -219,50 +236,44 @@
             trips.filter(t => t.timestamp.startsWith(today)).forEach(t => {
                 if(t.type === 'earning') tInc += t.amount; else tExp += t.amount;
                 list.innerHTML += `<div class="trip-item">
-                    <div><b>${t.category}</b><br><small>${t.km || 0} KM | ${t.timestamp.split('T')[1].substring(0,5)}</small></div>
+                    <div><b>${t.category}</b><br>${t.km > 0 ? `<span class="km-badge">${t.km} KM</span>` : ''} <small>${t.timestamp.split('T')[1].substring(0,5)}</small></div>
                     <div style="display:flex; align-items:center; gap:12px;">
                         <b style="color:${t.type==='earning'?'green':'red'};">₹${t.amount}</b>
-                        <span class="material-symbols-rounded" style="color:#DDD; font-size:18px;" onclick="delTrip('${t.id}')">delete</span>
+                        <span class="material-symbols-rounded" style="color:#DDD;" onclick="delTrip('${t.id}')">delete</span>
                     </div>
                 </div>`;
             });
 
             document.getElementById('dash-total').innerText = `₹${Math.round(tInc)}`;
-            document.getElementById('pending-val').innerText = (tInc < target) ? `PENDING: ₹${Math.round(target - tInc)}` : `DONE!`;
             document.getElementById('dash-emi').innerText = `₹${Math.round(Math.min(tInc, dailyEmi))}`;
             document.getElementById('dash-profit').innerText = `₹${Math.round(Math.max(0, tInc - dailyEmi - tExp))}`;
+            document.getElementById('pending-val').innerText = (tInc < target) ? `PENDING: ₹${Math.round(target - tInc)}` : `TARGET ACHIEVED!`;
             document.getElementById('progress-bar').style.width = `${Math.min(100, (tInc/target)*100)}%`;
         }
 
-        // ACCURATE CALCULATOR LOGIC
-        window.strongCalc = () => {
-            const dest = document.getElementById('d-loc').value;
-            if(!dest) return alert("Drop location डालें!");
-            
-            // Strong Logic: App assumes real-world estimate for Pune 
-            // In a simple app, we simulate distance between points 
-            // Actual KM will be seen in Google Maps
-            const simulatedKM = (Math.random() * (15 - 2) + 2).toFixed(1);
-            const fare = simulatedKM <= 1.5 ? 25 : 25 + (simulatedKM - 1.5) * 17;
-
-            document.getElementById('m-dist').innerText = `${simulatedKM} KM`;
-            document.getElementById('m-res').innerText = `₹${Math.round(fare)}`;
-            document.getElementById('nav-btn').style.display = 'block';
-        };
-
-        window.startNav = () => {
-            const d = document.getElementById('d-loc').value;
-            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(d)}&travelmode=driving`);
-        };
-
-        // CALC
+        // --- Core Logic ---
+        window.mCalc = (km) => document.getElementById('m-res').innerText = `₹${Math.round(km <= 1.5 ? 25 : 25 + (km-1.5)*17)}`;
+        window.kmShow = (v) => document.getElementById('km-info').innerText = `Est. Distance: ${v >= 25 ? (1.5 + (v-25)/17).toFixed(1) : 0} KM`;
+        
         window.cIn = (v) => document.getElementById('c-disp').value += v;
         window.cClr = () => document.getElementById('c-disp').value = '';
         window.cBack = () => document.getElementById('c-disp').value = document.getElementById('c-disp').value.slice(0,-1);
         window.cRes = () => { try { document.getElementById('c-disp').value = eval(document.getElementById('c-disp').value); } catch { alert("Error"); } };
 
-        // CORE ACTIONS
-        window.openSheet = (id) => { document.getElementById(id).style.display = 'flex'; if(id === 'sheet-history') fetchHistory(); };
+        window.openSheet = (id) => {
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'sheet-config') {
+                const s = JSON.parse(localStorage.getItem('settings') || '{}');
+                document.getElementById('set-emi-upi').value = s.emiUpi || '';
+                document.getElementById('set-prof-upi').value = s.profUpi || '';
+                document.getElementById('set-goal').value = s.dailyGoal || '';
+                const cont = document.getElementById('emi-list'); cont.innerHTML = '';
+                (s.emis || []).forEach(e => addEmiRow(e.name, e.amount));
+            }
+            if(id === 'sheet-history') { document.getElementById('hist-date').value = getToday(); fetchHistory(); }
+            if(id === 'sheet-analysis') runAnalysis();
+        };
+
         window.closeSheets = () => document.querySelectorAll('.overlay').forEach(s => s.style.display = 'none');
         window.openModal = (id) => document.getElementById(id).style.display = 'flex';
         window.closeModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
@@ -275,7 +286,7 @@
                 const tIncToday = trips.filter(t => t.timestamp.startsWith(getToday()) && t.type === 'earning').reduce((s,t) => s + t.amount, 0);
                 const dEmi = (set.emis || []).reduce((s,e) => s + (e.amount/30), 0);
                 let upi = (tIncToday < dEmi) ? set.emiUpi : set.profUpi;
-                document.getElementById('qr-label').innerText = (tIncToday < dEmi) ? "EMI RECOVERY" : "PROFIT MODE";
+                document.getElementById('qr-label').innerText = (tIncToday < dEmi) ? "EMI MODE" : "PROFIT MODE";
                 document.getElementById('qr-label').style.background = (tIncToday < dEmi) ? "#800000" : "#2E7D32";
                 document.getElementById('qr-view').style.display = 'flex';
                 document.getElementById('qr-code').innerHTML = "";
@@ -293,20 +304,25 @@
         };
 
         window.fetchHistory = () => {
-            const sel = document.getElementById('hist-date').value || getToday();
-            document.getElementById('hist-date').value = sel;
+            const sel = document.getElementById('hist-date').value;
             let inc = 0, exp = 0, html = "";
             trips.filter(t => t.timestamp.startsWith(sel)).forEach(t => {
                 if(t.type === 'earning') inc += t.amount; else exp += t.amount;
                 html += `<div class="trip-item"><b>${t.category}</b><b>₹${t.amount}</b></div>`;
             });
             document.getElementById('hist-sum').innerHTML = `<div class="stat-box">Earn: ₹${inc}</div><div class="stat-box">Net: ₹${inc-exp}</div>`;
-            document.getElementById('hist-data').innerHTML = html || "<p style='text-align:center; padding:20px; color:#999;'>No records.</p>";
+            document.getElementById('hist-data').innerHTML = html || "<p style='text-align:center; padding:20px;'>No trips recorded.</p>";
+        };
+
+        window.runAnalysis = () => {
+            const inc = trips.filter(t => t.type === 'earning').reduce((s, e) => s + e.amount, 0);
+            const exp = trips.filter(t => t.type === 'expense').reduce((s, e) => s + e.amount, 0);
+            document.getElementById('analysis-grid').innerHTML = `<div class="stat-box">Total Revenue<br>₹${inc}</div><div class="stat-box">Total Savings<br>₹${inc-exp}</div>`;
         };
 
         window.addEmiRow = (n='', a='') => {
             const div = document.createElement('div'); div.className = 'emi-row'; div.style = "display:flex; gap:8px; margin-top:8px;";
-            div.innerHTML = `<input type="text" placeholder="Loan" value="${n}"><input type="number" placeholder="Total" value="${a}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none;">✖</button>`;
+            div.innerHTML = `<input type="text" placeholder="Loan" value="${n}"><input type="number" placeholder="Total" value="${a}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; padding:10px;">✖</button>`;
             document.getElementById('emi-list').appendChild(div);
         };
 
@@ -322,7 +338,7 @@
                 dailyGoal: document.getElementById('set-goal').value,
                 emis: emis
             });
-            alert("Saved!"); closeSheets();
+            alert("Settings Saved!"); closeSheets();
         };
 
         window.upCats = () => {
@@ -331,9 +347,24 @@
         };
         window.upCats();
 
-        window.kmLogic = (v) => document.getElementById('km-info').innerText = `Calculated KM: ${v >= 25 ? (1.5 + (v-25)/17).toFixed(1) : 0}`;
+        window.toggleChart = () => {
+            const c = document.getElementById('chart-cont'); c.style.display = c.style.display === 'none' ? 'block' : 'none';
+            if(c.style.display === 'block') {
+                const ctx = document.getElementById('mainChart').getContext('2d');
+                const data = [], labels = [];
+                for(let i=6; i>=0; i--) {
+                    const d = new Date(); d.setDate(d.getDate()-i); const ds = d.toISOString().split('T')[0];
+                    labels.push(d.toLocaleDateString('hi-IN', {weekday:'short'}));
+                    data.push(trips.filter(t => t.timestamp.startsWith(ds)).reduce((s,t) => s + (t.type==='earning'?t.amount:-t.amount), 0));
+                }
+                if(mainChart) mainChart.destroy();
+                mainChart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data, backgroundColor:'#800000', borderRadius:8 }] }, options:{ plugins:{ legend:{display:false} }, scales:{ y:{display:false}, x:{grid:{display:false}} } } });
+            }
+        };
+
         window.delTrip = async (id) => { if(confirm("डिलीट करें?")) await deleteDoc(doc(db, `users/${currUser.uid}/trips`, id)); };
         window.signOutUser = () => signOut(auth).then(() => location.reload());
+        document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
 
     </script>
 </body>
