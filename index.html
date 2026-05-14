@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -6,169 +6,85 @@
     <title>QuickTap - Cloud Admin Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #D32F2F; --dark: #1A1A1A; --bg: #F5F5F5; --success: #2E7D32; --pending: #F57C00; }
+        :root { --primary: #D32F2F; --dark: #1A1A1A; --bg: #F5F5F5; --success: #2E7D32; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: #333; padding: 20px; }
-
-        .container { max-width: 1000px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; border-top: 6px solid var(--primary); }
-        .header { background: white; padding: 30px; text-align: center; border-bottom: 1px solid #EEE; }
-        .header h1 { color: var(--primary); font-size: 26px; font-weight: 800; letter-spacing: 1px; }
-        .header p { color: #888; font-size: 13px; margin-top: 5px; }
-
-        /* Stats Section */
-        .stats-bar { display: flex; justify-content: space-around; padding: 20px; background: #FFF9F9; border-bottom: 1px solid #EEE; }
-        .stat-item { text-align: center; }
-        .stat-item b { display: block; font-size: 20px; color: var(--primary); }
-        .stat-item span { font-size: 11px; font-weight: 800; color: #AAA; }
-
-        /* Table Design */
+        body { background: var(--bg); padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-top: 6px solid var(--primary); }
+        .header { padding: 30px; text-align: center; border-bottom: 1px solid #EEE; }
+        .header h1 { color: var(--primary); font-size: 24px; font-weight: 800; }
         .table-box { padding: 20px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; padding: 15px; background: #FDFDFD; color: #666; font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #EEE; }
-        td { padding: 15px; border-bottom: 1px solid #FAFAFA; font-size: 14px; vertical-align: middle; }
-        
-        .user-info b { display: block; color: var(--dark); }
-        .user-info small { color: #999; font-family: monospace; font-size: 11px; }
-
-        /* Status Badge */
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; }
+        th { text-align: left; padding: 15px; color: #666; font-size: 12px; border-bottom: 2px solid #EEE; }
+        td { padding: 15px; border-bottom: 1px solid #FAFAFA; font-size: 14px; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
         .active { background: #E8F5E9; color: var(--success); }
-        .pending { background: #FFF3E0; color: var(--pending); }
-        .blocked { background: #FFEBEE; color: var(--primary); }
-
-        /* Controls */
-        input[type="number"] { width: 60px; padding: 10px; border-radius: 10px; border: 1px solid #DDD; outline: none; font-weight: bold; text-align: center; }
-        .btn { border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; transition: 0.2s; color: white; }
-        .btn-act { background: var(--success); box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2); }
-        .btn-act:hover { background: #1B5E20; }
-        .btn-blk { background: #444; margin-left: 5px; }
-
-        .loading { text-align: center; padding: 50px; color: var(--primary); font-weight: bold; }
+        .pending { background: #FFF3E0; color: #F57C00; }
+        input[type="number"] { width: 55px; padding: 8px; border-radius: 8px; border: 1px solid #DDD; text-align: center; }
+        .btn { border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; cursor: pointer; color: white; margin-right: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>QUICKTAP CONTROL CENTER</h1>
-        <p>Manage Application Subscriptions & Access</p>
-    </div>
-
-    <div class="stats-bar">
-        <div class="stat-item"><b id="total-count">0</b><span>TOTAL USERS</span></div>
-        <div class="stat-item"><b id="active-count" style="color: var(--success);">0</b><span>ACTIVE NOW</span></div>
+        <h1>QUICKTAP ADMIN PANEL</h1>
+        <p>Finance Pro - Cloud Driver Management</p>
     </div>
 
     <div class="table-box">
-        <table id="userTable">
+        <table>
             <thead>
-                <tr>
-                    <th>Driver Details</th>
-                    <th>Status</th>
-                    <th>Set Hours</th>
-                    <th>Control Action</th>
-                </tr>
+                <tr><th>Driver Name</th><th>Status</th><th>Set Access (Hrs)</th><th>Action</th></tr>
             </thead>
-            <tbody id="driverList">
-                <!-- Data will load here via JavaScript -->
-            </tbody>
+            <tbody id="list"></tbody>
         </table>
-        <div id="loader" class="loading">CONNECTING TO DATABASE...</div>
+        <div id="loader" style="text-align:center; padding:30px;">Loading Database...</div>
     </div>
 </div>
 
 <script>
-    // --- APNA FIREBASE DATABASE URL YAHAN REPLACE KAREIN ---
-    const DB_URL = "https://finance-pro-default-rtdb.firebaseio.com/users.json";
+    // URL AUTOMATICALLY SET BY SYSTEM
+    const DB_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com/users.json";
 
-    async function loadDrivers() {
-        try {
-            const response = await fetch(DB_URL);
-            const data = await response.json();
-            const tbody = document.getElementById('driverList');
-            const loader = document.getElementById('loader');
-            
-            tbody.innerHTML = "";
-            loader.style.display = "none";
+    async function load() {
+        const res = await fetch(DB_URL);
+        const data = await res.json();
+        const list = document.getElementById('list');
+        document.getElementById('loader').style.display = "none";
+        list.innerHTML = "";
 
-            if (!data) {
-                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:40px; color:#999;'>No requests found in database.</td></tr>";
-                return;
+        if(!data) return;
+
+        for (let id in data) {
+            let u = data[id];
+            let remaining = "";
+            if(u.status === 'active') {
+                let diff = u.expiry - Date.now();
+                remaining = diff > 0 ? `(${Math.floor(diff/3600000)}h left)` : "(Expired)";
             }
 
-            let total = 0, active = 0;
-
-            for (let id in data) {
-                let user = data[id];
-                total++;
-                if(user.status === 'active') active++;
-
-                // Expiry Check Logic
-                let timeRemaining = "";
-                if (user.status === 'active') {
-                    let diff = user.expiry - Date.now();
-                    if (diff > 0) {
-                        let hrs = Math.floor(diff / (1000 * 60 * 60));
-                        let mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        timeRemaining = `<br><span style="color:#666; font-size:10px;">⏳ Left: ${hrs}h ${mins}m</span>`;
-                    } else {
-                        timeRemaining = `<br><span style="color:red; font-size:10px;">⚠️ Expired</span>`;
-                    }
-                }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="user-info">
-                            <b>${user.name || 'Unknown'}</b>
-                            <small>ID: ${id}</small>
-                        </td>
-                        <td>
-                            <span class="badge ${user.status}">
-                                ${user.status.toUpperCase()}
-                            </span>
-                            ${timeRemaining}
-                        </td>
-                        <td>
-                            <input type="number" id="hrs_${id}" value="24" min="1">
-                        </td>
-                        <td>
-                            <button class="btn btn-act" onclick="updateUser('${id}', 'active')">ACTIVATE</button>
-                            <button class="btn btn-blk" onclick="updateUser('${id}', 'blocked')">BLOCK</button>
-                        </td>
-                    </tr>
-                `;
-            }
-            document.getElementById('total-count').innerText = total;
-            document.getElementById('active-count').innerText = active;
-
-        } catch (e) {
-            console.error("Database connection failed");
+            list.innerHTML += `
+                <tr>
+                    <td><b>${u.name}</b><br><small>ID: ${id}</small></td>
+                    <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span><br><small>${remaining}</small></td>
+                    <td><input type="number" id="h_${id}" value="24"></td>
+                    <td>
+                        <button class="btn" style="background:var(--success)" onclick="act('${id}','active')">ACTIVATE</button>
+                        <button class="btn" style="background:#444" onclick="act('${id}','blocked')">BLOCK</button>
+                    </td>
+                </tr>`;
         }
     }
 
-    async function updateUser(id, newStatus) {
-        const hrs = document.getElementById('hrs_' + id).value || 24;
-        const expiryTime = Date.now() + (hrs * 3600 * 1000);
-
-        const updateUrl = `https://finance-pro-default-rtdb.firebaseio.com/users/${id}.json`;
-
-        // Update Firebase
-        await fetch(updateUrl, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                status: newStatus,
-                expiry: (newStatus === 'active') ? expiryTime : 0
-            })
+    async function act(id, s) {
+        const h = document.getElementById('h_'+id).value;
+        const exp = Date.now() + (h * 3600 * 1000);
+        await fetch(DB_URL.replace('.json', `/${id}.json`), {
+            method: 'PATCH', body: JSON.stringify({status: s, expiry: exp})
         });
-
-        alert("Driver Update Successful!");
-        loadDrivers();
+        alert("Done!"); load();
     }
-
-    // Auto Refresh every 10 seconds
-    setInterval(loadDrivers, 10000);
-    loadDrivers();
+    setInterval(load, 8000); load();
 </script>
-
 </body>
-</html>         
+</html>
