@@ -6,85 +6,355 @@
     <title>QuickTap - Cloud Admin Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #D32F2F; --dark: #1A1A1A; --bg: #F5F5F5; --success: #2E7D32; }
+        :root { --primary: #D32F2F; --dark: #1A1A1A; --bg: #F8F9FA; --success: #2E7D32; --accent: #6200EE; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-top: 6px solid var(--primary); }
-        .header { padding: 30px; text-align: center; border-bottom: 1px solid #EEE; }
-        .header h1 { color: var(--primary); font-size: 24px; font-weight: 800; }
-        .table-box { padding: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; padding: 15px; color: #666; font-size: 12px; border-bottom: 2px solid #EEE; }
-        td { padding: 15px; border-bottom: 1px solid #FAFAFA; font-size: 14px; }
-        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+
+        .container { max-width: 1000px; margin: auto; }
+        
+        /* Card Design */
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; border-top: 5px solid var(--primary); }
+        .card h2 { font-size: 20px; margin-bottom: 20px; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+
+        /* Global Settings Section */
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 11px; font-weight: 800; color: #888; text-transform: uppercase; }
+        
+        input { padding: 12px; border-radius: 12px; border: 1px solid #DDD; outline: none; font-size: 14px; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(211,47,47,0.1); }
+
+        .btn { border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; font-size: 13px; }
+        .btn-save { background: var(--primary); width: 100%; margin-top: 20px; }
+        .btn-act { background: var(--success); }
+        .btn-blk { background: #444; }
+
+        /* Table Design */
+        .table-box { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { text-align: left; padding: 15px; color: #888; font-size: 12px; border-bottom: 2px solid #EEE; }
+        td { padding: 18px 15px; border-bottom: 1px solid #F5F5F5; font-size: 14px; }
+        
+        .driver-info b { display: block; font-size: 15px; }
+        .driver-info span { font-size: 11px; color: #AAA; font-family: monospace; }
+
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
         .active { background: #E8F5E9; color: var(--success); }
         .pending { background: #FFF3E0; color: #F57C00; }
-        input[type="number"] { width: 55px; padding: 8px; border-radius: 8px; border: 1px solid #DDD; text-align: center; }
-        .btn { border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; cursor: pointer; color: white; margin-right: 5px; }
+        .blocked { background: #FFEBEE; color: var(--primary); }
+
+        .loading-overlay { text-align: center; padding: 40px; color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>QUICKTAP ADMIN PANEL</h1>
-        <p>Finance Pro - Cloud Driver Management</p>
+    
+    <!-- 1. HEADER SECTION -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: var(--primary); font-weight: 800; letter-spacing: 1px;">QUICKTAP CLOUD MASTER</h1>
+        <p style="color: #666; font-size: 13px;">Manage UPI, Pricing and Driver Subscriptions</p>
     </div>
 
-    <div class="table-box">
-        <table>
-            <thead>
-                <tr><th>Driver Name</th><th>Status</th><th>Set Access (Hrs)</th><th>Action</th></tr>
-            </thead>
-            <tbody id="list"></tbody>
-        </table>
-        <div id="loader" style="text-align:center; padding:30px;">Loading Database...</div>
+    <!-- 2. GLOBAL APP CONFIGURATION -->
+    <div class="card" style="border-top-color: var(--accent);">
+        <h2>⚙️ GLOBAL SETTINGS (App Sync)</h2>
+        <div class="config-grid">
+            <div class="input-group">
+                <label>Admin UPI ID</label>
+                <input type="text" id="upi_id" placeholder="e.g. suraj@okaxis">
+            </div>
+            <div class="input-group">
+                <label>Daily Price (₹)</label>
+                <input type="number" id="p1" placeholder="50">
+            </div>
+            <div class="input-group">
+                <label>Weekly Price (₹)</label>
+                <input type="number" id="p2" placeholder="300">
+            </div>
+            <div class="input-group">
+                <label>Monthly Price (₹)</label>
+                <input type="number" id="p3" placeholder="1000">
+            </div>
+        </div>
+        <button class="btn btn-save" onclick="saveGlobalConfig()">SYNC SETTINGS TO ALL APPS</button>
     </div>
+
+    <!-- 3. DRIVER MANAGEMENT TABLE -->
+    <div class="card">
+        <h2>👥 DRIVER REQUESTS</h2>
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Driver Details</th>
+                        <th>Selected Plan</th>
+                        <th>Status</th>
+                        <th>Set Access (Hrs)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="driverList">
+                    <!-- Data loads here -->
+                </tbody>
+            </table>
+            <div id="loader" class="loading-overlay">CONNECTING CLOUD...</div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // URL AUTOMATICALLY SET BY SYSTEM
-    const DB_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com/users.json";
+    const BASE_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com";
 
-    async function load() {
-        const res = await fetch(DB_URL);
-        const data = await res.json();
-        const list = document.getElementById('list');
-        document.getElementById('loader').style.display = "none";
-        list.innerHTML = "";
-
-        if(!data) return;
-
-        for (let id in data) {
-            let u = data[id];
-            let remaining = "";
-            if(u.status === 'active') {
-                let diff = u.expiry - Date.now();
-                remaining = diff > 0 ? `(${Math.floor(diff/3600000)}h left)` : "(Expired)";
+    // --- 1. Load Everything ---
+    async function loadAllData() {
+        try {
+            // Load App Settings (UPI & Prices)
+            const configRes = await fetch(`${BASE_URL}/app_settings.json`);
+            const config = await configRes.json();
+            if(config) {
+                document.getElementById('upi_id').value = config.upi || "";
+                document.getElementById('p1').value = config.p1 || "50";
+                document.getElementById('p2').value = config.p2 || "300";
+                document.getElementById('p3').value = config.p3 || "1000";
             }
 
-            list.innerHTML += `
-                <tr>
-                    <td><b>${u.name}</b><br><small>ID: ${id}</small></td>
-                    <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span><br><small>${remaining}</small></td>
-                    <td><input type="number" id="h_${id}" value="24"></td>
-                    <td>
-                        <button class="btn" style="background:var(--success)" onclick="act('${id}','active')">ACTIVATE</button>
-                        <button class="btn" style="background:#444" onclick="act('${id}','blocked')">BLOCK</button>
-                    </td>
-                </tr>`;
-        }
+            // Load Users
+            const userRes = await fetch(`${BASE_URL}/users.json`);
+            const users = await userRes.json();
+            const tbody = document.getElementById('driverList');
+            document.getElementById('loader').style.display = "none";
+            tbody.innerHTML = "";
+
+            if (!users) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:30px; color:#999;'>No driver requests found.</td></tr>";
+                return;
+            }
+
+            for (let id in users) {
+                let u = users[id];
+                let timeText = "";
+                if(u.status === 'active') {
+                    let timeLeft = u.expiry - Date.now();
+                    timeText = timeLeft > 0 ? `<br><small style="color:#666">⏳ ${Math.floor(timeLeft/3600000)}h left</small>` : "<br><small style='color:red'>Expired</small>";
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="driver-info"><b>${u.name}</b><span>ID: ${id}</span></td>
+                        <td><b style="color:var(--accent)">${u.plan || 'N/A'}</b></td>
+                        <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span>${timeText}</td>
+                        <td><input type="number" id="hrs_${id}" value="24" style="width:60px"></td>
+                        <td>
+                            <button class="btn btn-act" onclick="updateUser('${id}', 'active')">ACTIVATE</button>
+                            <button class="btn btn-blk" onclick="updateUser('${id}', 'blocked')">BLOCK</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        } catch (e) { console.error("Cloud Error"); }
     }
 
-    async function act(id, s) {
-        const h = document.getElementById('h_'+id).value;
-        const exp = Date.now() + (h * 3600 * 1000);
-        await fetch(DB_URL.replace('.json', `/${id}.json`), {
-            method: 'PATCH', body: JSON.stringify({status: s, expiry: exp})
-        });
-        alert("Done!"); load();
+    // --- 2. Save Global Settings ---
+    async funBhai, ye raha aapka **QuickTap Admin Panel** ka **Full Final Website Code**. 
+
+Isme humne **User Control Table** aur **Global App Settings (UPI + Prices)** dono ko ek hi page par merge kar diya hai. Ise apne GitHub repo mein **`index.html`** file mein poora replace kar dein.
+
+### File: `index.html` (Full Professional Admin Panel)
+
+```html
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickTap - Cloud Admin Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #D32F2F; --dark: #1A1A1A; --bg: #F8F9FA; --success: #2E7D32; --accent: #6200EE; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: #333; padding: 20px; }
+
+        .container { max-width: 1000px; margin: auto; }
+        
+        /* Card Design */
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; border-top: 5px solid var(--primary); }
+        .card h2 { font-size: 20px; margin-bottom: 20px; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+
+        /* Global Settings Section */
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 11px; font-weight: 800; color: #888; text-transform: uppercase; }
+        
+        input { padding: 12px; border-radius: 12px; border: 1px solid #DDD; outline: none; font-size: 14px; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(211,47,47,0.1); }
+
+        .btn { border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; font-size: 13px; }
+        .btn-save { background: var(--primary); width: 100%; margin-top: 20px; }
+        .btn-act { background: var(--success); }
+        .btn-blk { background: #444; }
+
+        /* Table Design */
+        .table-box { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { text-align: left; padding: 15px; color: #888; font-size: 12px; border-bottom: 2px solid #EEE; }
+        td { padding: 18px 15px; border-bottom: 1px solid #F5F5F5; font-size: 14px; }
+        
+        .driver-info b { display: block; font-size: 15px; }
+        .driver-info span { font-size: 11px; color: #AAA; font-family: monospace; }
+
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+        .active { background: #E8F5E9; color: var(--success); }
+        .pending { background: #FFF3E0; color: #F57C00; }
+        .blocked { background: #FFEBEE; color: var(--primary); }
+
+        .loading-overlay { text-align: center; padding: 40px; color: var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- 1. HEADER SECTION -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: var(--primary); font-weight: 800; letter-spacing: 1px;">QUICKTAP CLOUD MASTER</h1>
+        <p style="color: #666; font-size: 13px;">Manage UPI, Pricing and Driver Subscriptions</p>
+    </div>
+
+    <!-- 2. GLOBAL APP CONFIGURATION -->
+    <div class="card" style="border-top-color: var(--accent);">
+        <h2>⚙️ GLOBAL SETTINGS (App Sync)</h2>
+        <div class="config-grid">
+            <div class="input-group">
+                <label>Admin UPI ID</label>
+                <input type="text" id="upi_id" placeholder="e.g. suraj@okaxis">
+            </div>
+            <div class="input-group">
+                <label>Daily Price (₹)</label>
+                <input type="number" id="p1" placeholder="50">
+            </div>
+            <div class="input-group">
+                <label>Weekly Price (₹)</label>
+                <input type="number" id="p2" placeholder="300">
+            </div>
+            <div class="input-group">
+                <label>Monthly Price (₹)</label>
+                <input type="number" id="p3" placeholder="1000">
+            </div>
+        </div>
+        <button class="btn btn-save" onclick="saveGlobalConfig()">SYNC SETTINGS TO ALL APPS</button>
+    </div>
+
+    <!-- 3. DRIVER MANAGEMENT TABLE -->
+    <div class="card">
+        <h2>👥 DRIVER REQUESTS</h2>
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Driver Details</th>
+                        <th>Selected Plan</th>
+                        <th>Status</th>
+                        <th>Set Access (Hrs)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="driverList">
+                    <!-- Data loads here -->
+                </tbody>
+            </table>
+            <div id="loader" class="loading-overlay">CONNECTING CLOUD...</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com";
+
+    // --- 1. Load Everything ---
+    async function loadAllData() {
+        try {
+            // Load App Settings (UPI & Prices)
+            const configRes = await fetch(`${BASE_URL}/app_settings.json`);
+            const config = await configRes.json();
+            if(config) {
+                document.getElementById('upi_id').value = config.upi || "";
+                document.getElementById('p1').value = config.p1 || "50";
+                document.getElementById('p2').value = config.p2 || "300";
+                document.getElementById('p3').value = config.p3 || "1000";
+            }
+
+            // Load Users
+            const userRes = await fetch(`${BASE_URL}/users.json`);
+            const users = await userRes.json();
+            const tbody = document.getElementById('driverList');
+            document.getElementById('loader').style.display = "none";
+            tbody.innerHTML = "";
+
+            if (!users) {
+                tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:30px; color:#999;'>No driver requests found.</td></tr>";
+                return;
+            }
+
+            for (let id in users) {
+                let u = users[id];
+                let timeText = "";
+                if(u.status === 'active') {
+                    let timeLeft = u.expiry - Date.now();
+                    timeText = timeLeft > 0 ? `<br><small style="color:#666">⏳ ${Math.floor(timeLeft/3600000)}h left</small>` : "<br><small style='color:red'>Expired</small>";
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="driver-info"><b>${u.name}</b><span>ID: ${id}</span></td>
+                        <td><b style="color:var(--accent)">${u.plan || 'N/A'}</b></td>
+                        <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span>${timeText}</td>
+                        <td><input type="number" id="hrs_${id}" value="24" style="width:60px"></td>
+                        <td>
+                            <button class="btn btn-act" onclick="updateUser('${id}', 'active')">ACTIVATE</button>
+                            <button class="btn btn-blk" onclick="updateUser('${id}', 'blocked')">BLOCK</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        } catch (e) { console.error("Cloud Error"); }
     }
-    setInterval(load, 8000); load();
+
+    // --- 2. Save Global Settings ---
+    async function saveGlobalConfig() {
+        const upi = document.getElementById('upi_id').value;
+        const p1 = document.getElementById('p1').value;
+        const p2 = document.getElementById('p2').value;
+        const p3 = document.getElementById('p3').value;
+
+        if(!upi) return alert("Enter UPI ID!");
+
+        await fetch(`${BASE_URL}/app_settings.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ upi, p1, p2, p3 })
+        });
+        alert("Success: App Settings Updated!");
+        loadAllData();
+    }
+
+    // --- 3. Update User Status ---
+    async function updateUser(id, s) {
+        const h = document.getElementById('hrs_'+id).value || 24;
+        const exp = Date.now() + (h * 3600 * 1000);
+        
+        await fetch(`${BASE_URL}/users/${id}.json`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: s, expiry: exp })
+        });
+        alert("Driver Updated!");
+        loadAllData();
+    }
+
+    setInterval(loadAllData, 10000); // 10s auto-refresh
+    loadAllData();
 </script>
+
 </body>
 </html>
