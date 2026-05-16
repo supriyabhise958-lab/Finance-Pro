@@ -188,11 +188,12 @@
                 let currentStatus = u.status || 'pending';
                 let selectedPlan = u.plan || 'daily';
 
-                // AUTOMATIC EXPIRE CHECK: टाइम पूरा होने पर 0 सेकंड में ऑटो-ब्लॉक
+                // लॉजिक 1: ऑटोमैटिक एक्सपायरी चेक (टाइम खत्म होते ही 0 सेकंड में ब्लॉक)
                 if (u.expiry && now > u.expiry && currentStatus === 'active') {
                     currentStatus = 'blocked';
+                    u.expiry = 0; // एक्सपायरी को तुरंत रीसेट करें
                     await fetch(`${DB_ROOT}/users/${id}.json`, {
-                        method: 'PATCH', body: JSON.stringify({ status: 'blocked' })
+                        method: 'PATCH', body: JSON.stringify({ status: 'blocked', expiry: 0 })
                     });
                 }
 
@@ -214,14 +215,14 @@
                                 <div class="switch-wrapper">
                                     <span>Activate</span>
                                     <label class="switch switch-approve">
-                                        <input type="checkbox" ${approveChecked} onchange="handleToggle('${id}', 'active', '${selectedPlan}', this)">
+                                        <input type="checkbox" id="btn_act_${id}" ${approveChecked} onchange="handleToggle('${id}', 'active', '${selectedPlan}')">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
                                 <div class="switch-wrapper">
                                     <span>Block</span>
                                     <label class="switch switch-block">
-                                        <input type="checkbox" ${blockChecked} onchange="handleToggle('${id}', 'blocked', '${selectedPlan}', this)">
+                                        <input type="checkbox" id="btn_blk_${id}" ${blockChecked} onchange="handleToggle('${id}', 'blocked', '${selectedPlan}')">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
@@ -232,28 +233,42 @@
         } catch (e) { console.log("Cloud Error"); }
     }
 
-    // MANUAL INSTANT TOGGLE FUNCTION (सिर्फ आपके क्लिक करने पर काम करेगा)
-    async function handleToggle(id, targetStatus, plan, element) {
-        // अगर यूजर स्विच ऑफ करने की कोशिश करे तो एक्शन न लें, सीधे पुराना डेटा रीलोड करें
-        if (!element.checked) {
-            loadData(); 
-            return;
-        }
+    // लॉजिक 2: मैनुअल ओवरराइड (0 सेकंड इंस्टेंट एक्शन फॉर एक्टिवेट एंड ब्लॉक)
+    async function handleToggle(id, targetStatus, plan) {
+        const actSwitch = document.getElementById(`btn_act_${id}`);
+        const blkSwitch = document.getElementById(`btn_blk_${id}`);
 
-        let days = 1; 
+        let expiryTimestamp = 0;
+
+        if (targetStatus === 'active') {
+            if (!actSwitch.checked) { 
+                // अगर एक्टिवेट स्विच को मैनुअली बंद किया जाए, तो उसे सीधे ब्लॉक स्टेट में डालें
+                handleToggle(id, 'blocked', plan);
+                return; 
+            }
+            if (blkSwitch) blkSwitch.checked = false; // ब्लॉक स्विच को तुरंत स्क्रीन पर बंद करें
+
+            let days = 1; 
+            if (plan && typeof plan === 'string') {
+                let p = plan.toLowerCase().trim();
+                if (p === 'weekly') days = 15;
+                else if (p === 'monthly') days = 30;
+                else days = 1;
+            }
+            expiryTimestamp = Date.now() + (days * 24 * 60 * 60 * 1000);
+        } 
         
-        // प्लान के मुताबिक दिनों की सटीक गणना
-        if (plan && typeof plan === 'string') {
-            let p = plan.toLowerCase().trim();
-            if (p === 'weekly') days = 15;
-            else if (p === 'monthly') days = 30;
-            else days = 1; // Default daily
+        else if (targetStatus === 'blocked') {
+            if (!blkSwitch.checked) { 
+                // अगर ब्लॉक स्विच को अनचेक किया जाए तो डिफ़ॉल्ट रूप से रीलोड करें
+                loadData(); 
+                return; 
+            }
+            if (actSwitch) actSwitch.checked = false; // एक्टिवेट स्विच को तुरंत स्क्रीन पर बंद करें
+            expiryTimestamp = 0; // मैनुअल ब्लॉक दबाते ही एक्सपायरी टाइम तुरंत 0 (Instant Kill Switch)
         }
 
-        // एक्टिवेट करने पर टाइम सेट होगा, ब्लॉक करने पर 0 हो जाएगा
-        const expiryTimestamp = targetStatus === 'active' ? Date.now() + (days * 24 * 60 * 60 * 1000) : 0;
-
-        // 0 सेकंड रिस्पॉन्स के साथ डायरेक्ट डेटाबेस अपडेट
+        // डायरेक्ट नेटवर्क फायरबेस सिंक (0 सेकंड डिले)
         try {
             await fetch(`${DB_ROOT}/users/${id}.json`, {
                 method: 'PATCH', 
@@ -262,9 +277,9 @@
                     expiry: expiryTimestamp 
                 })
             });
-            loadData(); // अपडेट के तुरंत बाद इंटरफ़ेस सिंक करें
+            loadData(); // इंटरफ़ेस को बिना देरी किए सिंक करें
         } catch (err) {
-            console.log("Update Error: ", err);
+            console.log("Database Network Error: ", err);
         }
     }
 
@@ -279,7 +294,7 @@
         alert("App Settings Updated Successfully!");
     }
 
-    setInterval(loadData, 7000); // 7 सेकंड में बैकग्राउंड रिफ्रेश और ऑटो-एक्सपायरी चेक
+    setInterval(loadData, 7000); // बैकग्राउंड में 7 सेकंड का ऑटो रिफ्रेश
     loadData();
 </script>
 </body>
