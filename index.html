@@ -4,527 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickTap Admin - Cloud Control</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
-
     <style>
-
-        :root {
-            --primary: #E53935;
-            --bg: #F4F6F8;
+        :root { 
+            --primary: #E53935; 
+            --bg: #F4F6F8; 
             --surface: #FFFFFF;
-            --success: #10B981;
+            --success: #10B981; 
             --danger: #EF4444;
             --text-main: #1F2937;
             --sidebar-width: 260px;
         }
 
-        *{
-            box-sizing:border-box;
-            margin:0;
-            padding:0;
-            font-family:'Inter',sans-serif;
-        }
-
-        body{
-            background:var(--bg);
-            color:var(--text-main);
-            display:flex;
-            min-height:100vh;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
 
         /* SIDEBAR */
-
-        .sidebar{
-            width:var(--sidebar-width);
-            background:#111827;
-            color:#fff;
-            padding:30px 20px;
-            display:flex;
-            flex-direction:column;
-            position:fixed;
-            height:100vh;
-            left:0;
-            top:0;
+        .sidebar {
+            width: var(--sidebar-width); background: #111827; color: #fff; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; left: 0; top: 0;
         }
+        .sidebar-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 40px; }
+        .sidebar-brand span { color: var(--primary); }
+        .menu-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .menu-item { padding: 12px 16px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: #9CA3AF; transition: 0.2s; }
+        .menu-item:hover { background: #1F2937; color: #fff; }
+        .menu-item.active { background: var(--primary); color: #fff; }
 
-        .sidebar-brand{
-            font-family:'Plus Jakarta Sans',sans-serif;
-            font-size:18px;
-            font-weight:800;
-            color:#fff;
-            margin-bottom:40px;
-        }
-
-        .sidebar-brand span{
-            color:var(--primary);
-        }
-
-        .menu-list{
-            list-style:none;
-            display:flex;
-            flex-direction:column;
-            gap:8px;
-        }
-
-        .menu-item{
-            padding:12px 16px;
-            border-radius:10px;
-            cursor:pointer;
-            font-size:14px;
-            font-weight:600;
-            color:#9CA3AF;
-            transition:0.2s;
-        }
-
-        .menu-item:hover{
-            background:#1F2937;
-            color:#fff;
-        }
-
-        .menu-item.active{
-            background:var(--primary);
-            color:#fff;
-        }
-
-        /* MAIN */
-
-        .main-content{
-            margin-left:var(--sidebar-width);
-            flex-grow:1;
-            padding:40px;
-            width:calc(100% - var(--sidebar-width));
-        }
-
-        .page-section{
-            display:none;
-        }
-
-        .page-section.active{
-            display:block;
-        }
-
-        .page-title{
-            font-family:'Plus Jakarta Sans',sans-serif;
-            font-size:24px;
-            font-weight:800;
-            margin-bottom:25px;
-        }
+        /* MAIN CONTENT */
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 40px; width: calc(100% - var(--sidebar-width)); }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 25px; }
 
         /* CARD */
-
-        .card{
-            background:#fff;
-            border-radius:16px;
-            padding:30px;
-            border:1px solid #E5E7EB;
-            margin-bottom:20px;
-        }
-
-        .config-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-            gap:15px;
-        }
-
-        input{
-            padding:12px;
-            border:1px solid #DDD;
-            border-radius:10px;
-            font-size:14px;
-            outline:none;
-            width:100%;
-        }
-
-        .btn-main{
-            background:var(--primary);
-            color:white;
-            border:none;
-            padding:14px;
-            width:100%;
-            border-radius:10px;
-            font-weight:700;
-            cursor:pointer;
-            margin-top:15px;
-        }
+        .card { background: #fff; border-radius: 16px; padding: 30px; border: 1px solid #E5E7EB; margin-bottom: 20px; }
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input { padding: 12px; border: 1px solid #DDD; border-radius: 10px; font-size: 14px; outline: none; width: 100%; font-weight: 600; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
 
         /* TABLE */
+        .table-box { overflow-x: auto; border: 1px solid #E5E7EB; border-radius: 14px; background: #fff; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 16px; color: #6B7280; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #EEE; background: #FAFAFA; }
+        td { padding: 16px; border-bottom: 1px solid #EEE; font-size: 14px; }
+        
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .pending { background: #FEF3C7; color: #D97706; }
+        .active { background: #E6F4EA; color: var(--success); }
+        .blocked { background: #FEE2E2; color: var(--danger); }
 
-        .table-box{
-            overflow-x:auto;
-            border:1px solid #E5E7EB;
-            border-radius:14px;
-            background:#fff;
-        }
-
-        table{
-            width:100%;
-            border-collapse:collapse;
-        }
-
-        th{
-            text-align:left;
-            padding:16px;
-            color:#6B7280;
-            font-size:11px;
-            text-transform:uppercase;
-            border-bottom:1px solid #EEE;
-            background:#FAFAFA;
-        }
-
-        td{
-            padding:16px;
-            border-bottom:1px solid #EEE;
-            font-size:14px;
-        }
-
-        .badge{
-            padding:5px 10px;
-            border-radius:20px;
-            font-size:10px;
-            font-weight:700;
-            text-transform:uppercase;
-        }
-
-        .pending{
-            background:#FEF3C7;
-            color:#D97706;
-        }
-
-        .active{
-            background:#E6F4EA;
-            color:var(--success);
-        }
-
-        .blocked{
-            background:#FEE2E2;
-            color:var(--danger);
-        }
-
-        .btn-act{
-            background:var(--success);
-            color:white;
-            border:none;
-            padding:8px 15px;
-            border-radius:8px;
-            font-weight:700;
-            cursor:pointer;
-            margin-right:5px;
-        }
-
-        .btn-blk{
-            background:#374151;
-            color:white;
-            border:none;
-            padding:8px 15px;
-            border-radius:8px;
-            font-weight:700;
-            cursor:pointer;
-        }
+        .btn-act { background: var(--success); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-right: 5px; }
+        .btn-blk { background: #374151; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         @media(max-width:768px){
-
-            body{
-                flex-direction:column;
-            }
-
-            .sidebar{
-                width:100%;
-                height:auto;
-                position:relative;
-            }
-
-            .main-content{
-                margin-left:0;
-                width:100%;
-                padding:20px;
-            }
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; width: 100%; padding: 20px; }
         }
-
     </style>
 </head>
-
 <body>
 
 <div class="sidebar">
-
-    <div class="sidebar-brand">
-        QUICKTAP <span>CLOUD</span>
-    </div>
-
+    <div class="sidebar-brand">QUICKTAP <span>CLOUD</span></div>
     <ul class="menu-list">
-        <li class="menu-item active" onclick="switchPage('config-page', this)">
-            ⚙️ Settings
-        </li>
-
-        <li class="menu-item" onclick="switchPage('drivers-page', this)">
-            🚗 Drivers
-        </li>
+        <li class="menu-item active" onclick="switchPage('config-page', this)">⚙️ Settings</li>
+        <li class="menu-item" onclick="switchPage('drivers-page', this)">🚗 Drivers</li>
     </ul>
-
 </div>
 
 <div class="main-content">
-
-    <!-- SETTINGS -->
-
+    <!-- PAGE 1: CONFIG -->
     <div id="config-page" class="page-section active">
-
-        <h2 class="page-title">
-            App Configuration
-        </h2>
-
+        <h2 class="page-title">App Configuration</h2>
         <div class="card">
-
             <div class="config-grid">
-
-                <div>
-                    <label style="font-size:10px;font-weight:bold;">
-                        UPI ID
-                    </label>
-
-                    <input type="text" id="admin_upi">
-                </div>
-
-                <div>
-                    <label style="font-size:10px;font-weight:bold;">
-                        Daily ₹
-                    </label>
-
-                    <input type="number" id="p1">
-                </div>
-
-                <div>
-                    <label style="font-size:10px;font-weight:bold;">
-                        Weekly ₹
-                    </label>
-
-                    <input type="number" id="p2">
-                </div>
-
-                <div>
-                    <label style="font-size:10px;font-weight:bold;">
-                        Monthly ₹
-                    </label>
-
-                    <input type="number" id="p3">
-                </div>
-
+                <div><label style="font-size:10px; font-weight:bold;">UPI ID</label><input type="text" id="admin_upi"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Daily ₹</label><input type="number" id="p1"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Weekly ₹</label><input type="number" id="p2"></div>
+                <div><label style="font-size:10px; font-weight:bold;">Monthly ₹</label><input type="number" id="p3"></div>
             </div>
-
-            <button class="btn-main" onclick="saveConfig()">
-                UPDATE LIVE APP
-            </button>
-
+            <button class="btn-main" onclick="saveConfig()">UPDATE LIVE APP SETTINGS</button>
         </div>
-
     </div>
 
-    <!-- DRIVERS -->
-
+    <!-- PAGE 2: DRIVERS -->
     <div id="drivers-page" class="page-section">
-
-        <h2 class="page-title">
-            Driver Requests
-        </h2>
-
+        <h2 class="page-title">Driver Requests Management</h2>
         <div class="table-box">
-
             <table>
-
                 <thead>
-                <tr>
-                    <th>Driver / ID</th>
-                    <th>Plan</th>
-                    <th>Status</th>
-                    <th>Set Hrs</th>
-                    <th>Actions</th>
-                </tr>
+                    <tr><th>Driver / ID</th><th>Status</th><th>Set Hrs</th><th>Actions</th></tr>
                 </thead>
-
                 <tbody id="userList"></tbody>
-
             </table>
-
-            <div id="loader" style="text-align:center;padding:30px;">
-                Connecting...
-            </div>
-
+            <div id="loader" style="text-align:center; padding:30px; font-weight:bold; color:var(--primary);">CONNECTING CLOUD...</div>
         </div>
-
     </div>
-
 </div>
 
 <script>
+    // --- DATABASE & SECURITY CONFIG ---
+    const DB_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com";
+    const ADMIN_KEY = "SURAJ_PRO_SECURE_99"; // Force Match with Firebase Rules
 
-const DB_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com";
-
-function switchPage(id, el){
-
-    document.querySelectorAll('.page-section').forEach(s=>{
-        s.classList.remove('active');
-    });
-
-    document.getElementById(id).classList.add('active');
-
-    document.querySelectorAll('.menu-item').forEach(i=>{
-        i.classList.remove('active');
-    });
-
-    el.classList.add('active');
-}
-
-async function loadData(){
-
-    try{
-
-        const confRes = await fetch(`${DB_URL}/app_settings.json`);
-        const conf = await confRes.json();
-
-        if(conf){
-
-            document.getElementById('admin_upi').value = conf.upi || "";
-            document.getElementById('p1').value = conf.p1 || "50";
-            document.getElementById('p2').value = conf.p2 || "300";
-            document.getElementById('p3').value = conf.p3 || "1000";
-        }
-
-        const userRes = await fetch(`${DB_URL}/users.json`);
-        const users = await userRes.json();
-
-        const list = document.getElementById('userList');
-
-        document.getElementById('loader').style.display = "none";
-
-        list.innerHTML = "";
-
-        if(!users){
-
-            list.innerHTML = `
-            <tr>
-                <td colspan="5" style="text-align:center;padding:20px;">
-                    No Users
-                </td>
-            </tr>
-            `;
-
-            return;
-        }
-
-        for(let id in users){
-
-            let u = users[id];
-
-            let timeText = u.status === 'active'
-                ? `<br><small>⏳ ${Math.max(0, Math.floor((u.expiry - Date.now()) / 3600000))}h left</small>`
-                : "";
-
-            list.innerHTML += `
-            <tr>
-
-                <td>
-                    <b>${u.name}</b><br>
-                    <small style="color:#999">${id}</small>
-                </td>
-
-                <td>
-                    <b style="color:blue">${u.plan || 'Daily'}</b>
-                </td>
-
-                <td>
-                    <span class="badge ${u.status}">
-                        ${u.status}
-                    </span>
-                    ${timeText}
-                </td>
-
-                <td>
-                    <input type="number" id="h_${id}" value="24" style="width:60px">
-                </td>
-
-                <td>
-
-                    <button class="btn-act"
-                        onclick="updateStatus('${id}', 'active')">
-                        ACTIVATE
-                    </button>
-
-                    <button class="btn-blk"
-                        onclick="updateStatus('${id}', 'blocked')">
-                        BLOCK
-                    </button>
-
-                </td>
-
-            </tr>
-            `;
-        }
-
-    }catch(e){
-        console.log("DB Error");
+    function switchPage(id, el){
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
     }
-}
 
-/* UPDATED MASTER SWITCH SYSTEM */
+    async function loadData() {
+        try {
+            // Fetch App Config
+            const confRes = await fetch(`${DB_URL}/app_settings.json`);
+            const conf = await confRes.json();
+            if(conf) {
+                document.getElementById('admin_upi').value = conf.upi || "";
+                document.getElementById('p1').value = conf.p1 || "50";
+                document.getElementById('p2').value = conf.p2 || "300";
+                document.getElementById('p3').value = conf.p3 || "1000";
+            }
 
-async function updateStatus(id, newStatus){
+            // Fetch Drivers
+            const userRes = await fetch(`${DB_URL}/users.json`);
+            const users = await userRes.json();
+            const list = document.getElementById('userList');
+            document.getElementById('loader').style.display = "none";
+            list.innerHTML = "";
 
-    const hrs = document.getElementById('h_' + id).value || 24;
+            if (!users) {
+                list.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:30px;'>No pending requests.</td></tr>";
+                return;
+            }
 
-    const expiry = Date.now() + (hrs * 3600 * 1000);
+            for (let id in users) {
+                let u = users[id];
+                let timeText = u.status === 'active' ? 
+                    `<br><small>⏳ ${Math.max(0, Math.floor((u.expiry - Date.now()) / 3600000))}h left</small>` : "";
 
-    const isAppOn = (newStatus === 'active');
+                list.innerHTML += `
+                <tr>
+                    <td><b>${u.name}</b><br><small style="color:#999">${id} | Plan: ${u.plan || 'None'}</small></td>
+                    <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span>${timeText}</td>
+                    <td><input type="number" id="h_${id}" value="24" style="width:60px"></td>
+                    <td>
+                        <button class="btn-act" onclick="updateStatus('${id}', 'active')">ACTIVATE</button>
+                        <button class="btn-blk" onclick="updateStatus('${id}', 'blocked')">BLOCK</button>
+                    </td>
+                </tr>`;
+            }
+        } catch (e) { console.error("Cloud Error"); }
+    }
 
-    await fetch(`${DB_URL}/users/${id}.json`, {
+    async function updateStatus(id, newStatus) {
+        const hrs = document.getElementById('h_' + id).value || 24;
+        const expiry = Date.now() + (hrs * 3600 * 1000);
+        const isAppOn = (newStatus === 'active');
 
-        method:'PATCH',
+        // 🛡️ SECURITY Logic: Passing admin_key to bypass rules
+        await fetch(`${DB_URL}/users/${id}.json`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                status: newStatus,
+                expiry: (newStatus === 'active' ? expiry : 0),
+                is_app_on: isAppOn,
+                admin_key: ADMIN_KEY
+            })
+        });
 
-        body: JSON.stringify({
+        alert(`Driver ${newStatus === 'active' ? 'Activated' : 'Blocked'} successfully!`);
+        loadData();
+    }
 
-            status: newStatus,
+    async function saveConfig() {
+        const data = {
+            upi: document.getElementById('admin_upi').value,
+            p1: document.getElementById('p1').value,
+            p2: document.getElementById('p2').value,
+            p3: document.getElementById('p3').value,
+            admin_key: ADMIN_KEY // 🛡️ Required to write settings
+        };
 
-            expiry: (newStatus === 'active' ? expiry : 0),
+        await fetch(`${DB_URL}/app_settings.json`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
 
-            is_app_on: isAppOn
+        alert("App Settings Synced with Nitro-Cloud!");
+    }
 
-        })
-
-    });
-
-    alert("Driver system updated successfully!");
-
+    setInterval(loadData, 7000);
     loadData();
-}
-
-async function saveConfig(){
-
-    const data = {
-
-        upi: document.getElementById('admin_upi').value,
-
-        p1: document.getElementById('p1').value,
-
-        p2: document.getElementById('p2').value,
-
-        p3: document.getElementById('p3').value
-    };
-
-    await fetch(`${DB_URL}/app_settings.json`, {
-
-        method:'PUT',
-
-        body:JSON.stringify(data)
-
-    });
-
-    alert("Synced with Cloud!");
-}
-
-setInterval(loadData, 6000);
-
-loadData();
-
 </script>
 
 </body>
