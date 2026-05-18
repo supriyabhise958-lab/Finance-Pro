@@ -75,7 +75,6 @@
 </div>
 
 <div class="main-content">
-    <!-- PAGE 1: CONFIG -->
     <div id="config-page" class="page-section active">
         <h2 class="page-title">App Configuration</h2>
         <div class="card">
@@ -89,13 +88,18 @@
         </div>
     </div>
 
-    <!-- PAGE 2: DRIVERS -->
     <div id="drivers-page" class="page-section">
         <h2 class="page-title">Driver Requests Management</h2>
         <div class="table-box">
             <table>
                 <thead>
-                    <tr><th>Driver / ID</th><th>Status</th><th>Set Hrs</th><th>Actions</th></tr>
+                    <tr>
+                        <th>Driver / ID</th>
+                        <th>Plan</th>
+                        <th>Status</th>
+                        <th>Set Hrs</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody id="userList"></tbody>
             </table>
@@ -105,9 +109,8 @@
 </div>
 
 <script>
-    // --- DATABASE & SECURITY CONFIG ---
     const DB_URL = "https://finance-pro-a58ef-default-rtdb.firebaseio.com";
-    const ADMIN_KEY = "SURAJ_PRO_SECURE_99"; // Force Match with Firebase Rules
+    const ADMIN_KEY = "SURAJ_PRO_SECURE_99";
 
     function switchPage(id, el){
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
@@ -118,7 +121,6 @@
 
     async function loadData() {
         try {
-            // Fetch App Config
             const confRes = await fetch(`${DB_URL}/app_settings.json`);
             const conf = await confRes.json();
             if(conf) {
@@ -128,7 +130,6 @@
                 document.getElementById('p3').value = conf.p3 || "1000";
             }
 
-            // Fetch Drivers
             const userRes = await fetch(`${DB_URL}/users.json`);
             const users = await userRes.json();
             const list = document.getElementById('userList');
@@ -136,19 +137,29 @@
             list.innerHTML = "";
 
             if (!users) {
-                list.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:30px;'>No pending requests.</td></tr>";
+                list.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:30px;'>No Users Found</td></tr>";
                 return;
             }
 
+            const now = Date.now();
+
             for (let id in users) {
                 let u = users[id];
-                let timeText = u.status === 'active' ? 
-                    `<br><small>⏳ ${Math.max(0, Math.floor((u.expiry - Date.now()) / 3600000))}h left</small>` : "";
+                
+                // 🛡️ SAFE FALLBACKS: Preventing rendering crashes
+                let driverName = u.name || "New Driver";
+                let driverStatus = u.status || "pending";
+                let driverPlan = u.plan || "Not Selected";
+                let expiryTime = u.expiry || 0;
+
+                let timeText = (driverStatus === 'active' && expiryTime > 0) ? 
+                    `<br><small>⏳ ${Math.max(0, Math.floor((expiryTime - now) / 3600000))}h left</small>` : "";
 
                 list.innerHTML += `
                 <tr>
-                    <td><b>${u.name}</b><br><small style="color:#999">${id} | Plan: ${u.plan || 'None'}</small></td>
-                    <td><span class="badge ${u.status}">${u.status.toUpperCase()}</span>${timeText}</td>
+                    <td><b>${driverName}</b><br><small style="color:#999">${id}</small></td>
+                    <td><b style="color:blue">${driverPlan}</b></td>
+                    <td><span class="badge ${driverStatus}">${driverStatus.toUpperCase()}</span>${timeText}</td>
                     <td><input type="number" id="h_${id}" value="24" style="width:60px"></td>
                     <td>
                         <button class="btn-act" onclick="updateStatus('${id}', 'active')">ACTIVATE</button>
@@ -156,7 +167,7 @@
                     </td>
                 </tr>`;
             }
-        } catch (e) { console.error("Cloud Error"); }
+        } catch (e) { console.error("Cloud Error: ", e); }
     }
 
     async function updateStatus(id, newStatus) {
@@ -164,7 +175,6 @@
         const expiry = Date.now() + (hrs * 3600 * 1000);
         const isAppOn = (newStatus === 'active');
 
-        // 🛡️ SECURITY Logic: Passing admin_key to bypass rules
         await fetch(`${DB_URL}/users/${id}.json`, {
             method: 'PATCH',
             body: JSON.stringify({
@@ -175,7 +185,7 @@
             })
         });
 
-        alert(`Driver ${newStatus === 'active' ? 'Activated' : 'Blocked'} successfully!`);
+        alert(`Driver updated to ${newStatus.toUpperCase()}`);
         loadData();
     }
 
@@ -185,20 +195,14 @@
             p1: document.getElementById('p1').value,
             p2: document.getElementById('p2').value,
             p3: document.getElementById('p3').value,
-            admin_key: ADMIN_KEY // 🛡️ Required to write settings
+            admin_key: ADMIN_KEY
         };
-
-        await fetch(`${DB_URL}/app_settings.json`, {
-            method: 'PUT',
-            body: JSON.stringify(data)
-        });
-
-        alert("App Settings Synced with Nitro-Cloud!");
+        await fetch(`${DB_URL}/app_settings.json`, { method: 'PUT', body: JSON.stringify(data) });
+        alert("Settings Synced!");
     }
 
     setInterval(loadData, 7000);
     loadData();
 </script>
-
 </body>
 </html>
